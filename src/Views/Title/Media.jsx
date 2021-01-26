@@ -21,6 +21,10 @@ const MediaPoster = styled.img`
     border-radius: 10px;
     margin: 0 20px 0 0;
     display: flex;
+    height: 400px;
+    @media(max-width:991px){
+        height: 200px
+    }
 `
 
 const MediaData = styled.div`
@@ -33,7 +37,7 @@ const Media = ({data}) => {
     return(
         <div>
             <Banner backdropSrc={data.backdrop_path}>
-                <MediaPoster height="400" src={`https://image.tmdb.org/t/p/w500/${data.poster_path}`} />
+                <MediaPoster src={`https://image.tmdb.org/t/p/w500/${data.poster_path}`} />
                 <MediaData>
                     <h2>{data.title ? data.title : data.name }</h2>
                     <p>{data.overview}</p>
