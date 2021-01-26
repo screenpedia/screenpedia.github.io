@@ -21,12 +21,10 @@ const Api = {
         }).then(t => {
             t.results = t.results.map(d => ({...d, media_type:"tv"}))
             tv = t;
-            results = {
+            return {
                 page: movies.page,
                 results: [...movies.results, ...tv.results].sort((a,b) => b.popularity - a.popularity)
             }
-            console.log(results)
-            return results
         })
     },
     find: async function(query, page = 1) {
