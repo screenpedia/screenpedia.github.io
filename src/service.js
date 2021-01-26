@@ -1,5 +1,5 @@
 const Api = {
-    url: "http://api.themoviedb.org/3",
+    url: "https://api.themoviedb.org/3",
     key: "6e885cd41366c8a6fb42f767d0b93a6c",
     get: async function(route, params = "", lang = "en-US") {
         if(!route){
