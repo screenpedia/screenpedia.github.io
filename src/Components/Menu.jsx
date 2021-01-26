@@ -99,6 +99,9 @@ const StyledInput = styled.input`
     &:focus{
         outline: 0;
     }
+    @media(max-width:991px){
+        width: 100%;
+    }
 `
 
 const Button = styled.button`
