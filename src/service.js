@@ -12,8 +12,7 @@ const Api = {
     },
     popular: async function() {
         var movies,
-            tv,
-            results;
+            tv;
         return await this.get("movie/popular").then(m => {
             m.results = m.results.map(d => ({...d, media_type:"movie"}))
             movies = m;

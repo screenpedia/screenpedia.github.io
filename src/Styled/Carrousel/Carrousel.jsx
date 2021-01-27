@@ -31,7 +31,6 @@ const Carrousel = styled.div`
     &::-webkit-scrollbar-thumb {
         border-color: inherit;
     }
-​
 `
 
 export default Carrousel;

@@ -1,5 +1,5 @@
 import styled from "styled-components"
-import SectionTitle from '../../Styled/Section'
+import SectionTitle from '../../Styled/Section/SectionTitle'
 import Carrousel from '../../Styled/Carrousel/Carrousel'
 import CarrouselItem from '../../Styled/Carrousel/CarrouselItem'
 
@@ -15,6 +15,10 @@ const Banner = styled.div`
     flex-wrap: nowrap;
     align-items:center;
     padding: 20px;
+    border-bottom-left-radius:10px;
+    @media(max-width: 991px){
+        border-bottom-right-radius:10px;
+    }
 `
 
 const MediaPoster = styled.img`
@@ -34,6 +38,7 @@ const MediaData = styled.div`
 `
 
 const Media = ({data}) => {
+    console.log(data)
     return(
         <div>
             <Banner backdropSrc={data.backdrop_path}>
@@ -46,7 +51,7 @@ const Media = ({data}) => {
             <div style={{padding: '10px'}}>
                 <SectionTitle>Recomendations</SectionTitle>
                 <Carrousel>
-                    {data.recomendations.map((d, i) => <CarrouselItem key={i} data={d}/>)}
+                    {data.recomendations.map((d, i) => <CarrouselItem key={i} data={d} firstChild={i === 0} lastChild={i === data.recomendations.length-1}/>)}
                 </Carrousel>
             </div>
         </div>

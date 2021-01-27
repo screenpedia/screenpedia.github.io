@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { Link, NavLink, useHistory } from "react-router-dom"
+import { Link, NavLink} from "react-router-dom"
 import styled from "styled-components"
 
 const StyledMenu = styled.div`
@@ -11,10 +11,10 @@ const StyledMenu = styled.div`
     top: 0;
     left: 0;
     display: flex;
-    align-items: center;
+    flex-shrink:0;
     flex-direction: column;
     z-index: 3;
-    transition: 0.5s max-width;
+    transition: all 0.5s;
     @media (max-width: 991px){
         width: 100%;
         overflow: hidden;
@@ -22,85 +22,48 @@ const StyledMenu = styled.div`
         max-width: ${({open}) => open ? 'calc(100vw - 20px)' : '0px'};
         position: fixed;
         padding: ${({open}) => open ? '10px' : '10px 0px'};
+        justify-content: center;
+        align-items: center;
     }
 `
 
 const StyledNavLink = styled(NavLink)`
+    margin-bottom: 5px;
     display: flex;
     border: none;
     width: auto;
     flex-wrap: nowrap;
     align-items: center;
-    padding: 5px 10px;
+    padding: 5px;
     border-radius: 10px;
     background: transparent;
     color: black;
-    font-weight: bold;
     text-decoration: none;
-    text-align: left;
     cursor: pointer;
-    &.active{
-        background: rgba(0,0,0,0.10);
-    }
-    & i{
-        margin-right: ${({open}) => open ? "5px" : "0"};
-    }
-    @media (min-width: 991px){
-        & span{
-            display: ${({open}) => open ? "flex" : "none"};
-        }
-    }
-`
-
-const StyledNavItem = styled.button`
-    display: flex;
-    border: none;
-    width: auto;
-    flex-wrap: nowrap;
-    align-items: center;
-    padding: 5px 10px;
-    border-radius: 10px;
-    background: transparent;
-    color: black;
+    transition: all 0.5s;
     font-weight: bold;
-    text-decoration: none;
-    text-align: left;
-    cursor: pointer;
+    font-size: unset;
     &.active{
         background: rgba(0,0,0,0.10);
     }
     &:focus{
-        outline: 0;
+        outline:none;
     }
     & i{
-        margin-right: ${({open}) => open ? "5px" : "0"};
         padding: 5px;
+        font-size: 16px;
     }
     @media (min-width: 991px){
         & span{
-            display: ${({open}) => open ? "flex" : "none"};
+            transition: all 0.2s linear;
+            overflow: hidden;
+            max-width: ${({open}) => open ? '100vh' : '0'};
+            padding-right: ${({open}) => open ? '5px' : '0'};
         }
     }
-`
 
-const StyledInput = styled.input`
-    display: flex;
-    width: 10vw;
-    margin: 0 5px 0 0;
-    border-radius: 10px;
-    border: 0;
-    background: transparent;
-    color: black;
-    font-weight: bold;
-    text-decoration: none;
-    &.active{
-        background: rgba(0,0,0,0.10);
-    }
-    &:focus{
-        outline: 0;
-    }
-    @media(max-width:991px){
-        width: 100%;
+    @media (${({hiddenCondition}) => hiddenCondition}){
+        display: none;
     }
 `
 
@@ -108,7 +71,7 @@ const Button = styled.button`
     border: 0;
     border-radius: 10px;
     padding: 5px;
-    transition: 0.5s all;
+    transition: 0.2s all;
     background: transparent;
     &:focus{
         outline:0;
@@ -117,13 +80,6 @@ const Button = styled.button`
         cursor: pointer;
     }
 `
-
-const Input = ({setOpen, open, onInput, onKeyPress, value, placeholder}) => (
-    <div style={{display:'flex', flexDirection:'row', flexWrap:'nowrap', margin: '5px 10px', padding: '2.5px 5px', borderRadius: '10px', background: (open || window.innerWidth < 991) ? "rgba(0,0,0,0.1)" : ""}}>
-        {(open || window.innerWidth < 991) && <StyledInput onInput={onInput} onKeyPress={onKeyPress} value={value} placeholder={placeholder} />}
-        <Button onClick={() => open ? onKeyPress({code:"Enter"}) : setOpen(!open)} className="fas fa-search"/>
-    </div>
-)
 
 const StyledMenuButton = styled(Button)`
     display: flex;
@@ -136,38 +92,44 @@ const StyledMenuButton = styled(Button)`
     &:hover{
         background: rgba(0,0,0,0.1);
     }
+    @media (min-width: 991px){
+        display: none;
+    }
+`
+
+const Icon = styled.i`
+    &::before{
+        padding: ${({padding}) => padding};
+    }
 `
 
 const Menu = () => {
-    const [open, setOpen] = useState(window.innerWidth > 991),
-        [name, setName] = useState("")
-    const history = useHistory();
-    const input = (e) => {
-        if(e.code==="Enter" && name) history.push(`/search/?name=${name}`)
-        else if(e.target) setName(e.target.value)
-    }
+    const [open, setOpen] = useState(window.innerWidth > 991)
+
     return(
         <>
-            {
-                window.innerWidth < 991 &&
-                <StyledMenuButton onClick={() => setOpen(!open)}>
-                    <i className={`fas fa-${open ? 'times' : 'bars'}`}></i>
-                </StyledMenuButton>
-            }
+            <StyledMenuButton onClick={() => setOpen(!open)}>
+                <i className={`fas fa-${open ? 'times' : 'bars'}`}></i>
+            </StyledMenuButton>
             <StyledMenu open={open}>
-                <Link to="/" style={{color: 'black', textDecoration: 'none'}}><h1 style={{marginBottom: '5px'}}>{open || window.innerWidth < 991 ? "App" : "A"}</h1></Link>
-                <Input setOpen={setOpen} open={open} onInput={input} onKeyPress={e => input(e)} value={name} placeholder="Find Movie or Serie" />
+                <Link to="/" style={{color: 'black', textDecoration: 'none'}}>
+                    <h1 style={{padding:"10px", marginBottom: '5px', display: 'flex'}}>
+                        M
+                        <div style={{display: 'flex', transition: '0.2s all', maxWidth: open ? '100vh' : '0', overflow: "hidden"}}>ovies</div>
+                    </h1>
+                </Link>
                 <StyledNavLink open={open} exact to="/">
-                    <i className={`fas fa-home`}/>
+                    <Icon className={`fas fa-home`}/>
                     <span>Home</span>
                 </StyledNavLink>
-                {
-                    window.innerWidth > 991 &&
-                    <StyledNavItem open={open} onClick={() => setOpen(!open)}>
-                        <i className={`fas fa-${open ? "chevron-left" : "chevron-right"}`}/>
-                        <span>Hide titles</span>
-                    </StyledNavItem>
-                }
+                <StyledNavLink open={open} exact to="/search">
+                    <Icon className={`fas fa-search`}/>
+                    <span>Search</span>
+                </StyledNavLink>
+                <StyledNavLink hiddenCondition={'max-width: 991px'} as="button" open={open} onClick={() => setOpen(!open)}>
+                    <Icon padding={'0 3px'} style={{transition: '0.2s all linear', transform: `rotate(${open ? '0' : "180deg"})`}} className={`fas fa-chevron-right`}/>
+                    <span>Hide</span>
+                </StyledNavLink>
             </StyledMenu>
         </>
     )
