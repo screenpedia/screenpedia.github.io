@@ -33,19 +33,17 @@ const PagingLink = styled.button`
 const Search = () => {
     const [search, setSearch] = useState(null),
         [error, setError] = useState(null),
-        [page, setPage] = useState(null),
+        [page, setPage] = useState(1),
         [totalPages, setTotalPages] = useState(0),
         history = useHistory(),
         [name, setName] = useState((new URLSearchParams(history.location.search)).get("name") || null)
         
     useEffect(() => {
         if(name !== ""){
-            setError(null)
             api.find(name, page)
                 .then(res => {
                     if(res.total_results === 0) throw new Error("No movie/serie match with input")
                     setSearch(res.results)
-                    setPage(res.page)
                     setTotalPages(Math.ceil(res.total_results / 20))
                 })
                 .catch(err => setError(err.message))
@@ -54,6 +52,9 @@ const Search = () => {
 
     useEffect(() => {
         setName((new URLSearchParams(history.location.search)).get("name") || "")
+        setPage(1)
+        setError(null)
+        setTotalPages(0)
     }, [history.location.search])
 
     return (

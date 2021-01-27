@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 const Carrousel = styled.div`
     // Para poner la scrollbar arriba 
-    transform: rotateX(180deg);
+    transform: rotateX(${({rotate}) => rotate ? '180deg' : 0});
     display: flex;
     flex-direction: row;
     width: 100%;

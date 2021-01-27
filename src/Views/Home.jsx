@@ -21,14 +21,14 @@ const Home = () => {
             <SearchBar />
             <Section>
                 <SectionTitle>Popular</SectionTitle>
-                <Carrousel>
-                    {popular.map((data, index) => <CarrouselItem key={index} data={data} firstChild={index === 0} lastChild={index === popular.length-1}/>)}
+                <Carrousel rotate={+true}>
+                    {popular.map((data, index) => <CarrouselItem rotate={+true} key={index} data={data} firstChild={index === 0} lastChild={index === popular.length-1}/>)}
                 </Carrousel>
             </Section>
             <Section>
                 <SectionTitle>Trending</SectionTitle>
-                <Carrousel>
-                    {trending.map((data, index) => <CarrouselItem key={index} data={data} firstChild={index === 0} lastChild={index === trending.length-1}/>)}
+                <Carrousel rotate={+true}>
+                    {trending.map((data, index) => <CarrouselItem rotate={+true} key={index} data={data} firstChild={index === 0} lastChild={index === trending.length-1}/>)}
                 </Carrousel>
             </Section>
         </div>

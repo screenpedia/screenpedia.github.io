@@ -24,6 +24,14 @@ ButtonSearch = styled.button`
     }
 `
 
+const StyledSection = styled(Section)`
+    padding: 50px;
+    border-radius: 0 0 0 10px;
+    @media (max-width: 991px){  
+        border-radius: 0 0 10px 10px;
+    }
+`
+
 const Search = () => {
     const history = useHistory(),
         [search, setSearch] = useState((new URLSearchParams(history.location.search)).get("name") || "")
@@ -33,7 +41,7 @@ const Search = () => {
     }, [history.location.search])
 
     return (
-        <Section background={"linear-gradient(90deg,#4a00e0,#8e2de2)"} style={{padding: "50px", borderRadius: "0 0 10px 10px"}}>
+        <StyledSection background={"linear-gradient(90deg,#4a00e0,#8e2de2)"}>
             <h2 style={{marginBottom: '15px', color: 'white', textAlign: 'center', filter: "drop-shadow(0px 5px 5px rgba(0,0,0,0.25))"}}>Search any movie or serie</h2>
             <div style={{display: 'flex', flexDirection: 'row', filter: "drop-shadow(0px 5px 5px rgba(0,0,0,0.25))"}}>
                 <InputSearch value={search} placeholder="Movie or serie name" onInput={(e) => setSearch(e.currentTarget.value)} onKeyPress={(e) => e.code === "Enter" ? history.push(`/search/?name=${search}`) : null} />
@@ -41,7 +49,7 @@ const Search = () => {
                     <i className="fas fa-search"></i>
                 </ButtonSearch>
             </div>
-        </Section>
+        </StyledSection>
     )
 }
 

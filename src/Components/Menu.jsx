@@ -14,7 +14,7 @@ const StyledMenu = styled.div`
     flex-shrink:0;
     flex-direction: column;
     z-index: 3;
-    transition: all 0.5s;
+    transition: all 0.2s ease;
     @media (max-width: 991px){
         width: 100%;
         overflow: hidden;
@@ -56,7 +56,7 @@ const StyledNavLink = styled(NavLink)`
     }
     @media (min-width: 991px){
         & span{
-            transition: all 0.2s linear;
+            transition: all 0.2s ease;
             overflow: hidden;
             max-width: ${({open}) => open ? '100vh' : '0'};
             padding-right: ${({open}) => open ? '5px' : '0'};
@@ -116,7 +116,7 @@ const Menu = () => {
                 <Link to="/" style={{color: 'black', textDecoration: 'none'}}>
                     <h1 style={{padding:"10px", marginBottom: '5px', display: 'flex'}}>
                         M
-                        <div style={{display: 'flex', transition: '0.2s all', maxWidth: open ? '100vh' : '0', overflow: "hidden"}}>ovies</div>
+                        <div style={{display: 'flex', transition: 'all 0.2s ease', maxWidth: open ? '100vh' : '0', overflow: "hidden"}}>ovies</div>
                     </h1>
                 </Link>
                 <StyledNavLink open={open} exact to="/">
