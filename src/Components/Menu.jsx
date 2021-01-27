@@ -128,7 +128,7 @@ const Menu = () => {
                     <span>Search</span>
                 </StyledNavLink>
                 <StyledNavLink hiddenCondition={'max-width: 991px'} as="button" open={open} onClick={() => setOpen(!open)}>
-                    <Icon padding={'0 3px'} style={{transition: '0.2s all linear', transform: `rotate(${open ? '0' : "180deg"})`}} className={`fas fa-chevron-right`}/>
+                    <Icon padding={'0 3px'} style={{transition: '0.2s all linear', transform: `rotate(${open ? '0' : "180deg"})`}} className={`fas fa-chevron-left`}/>
                     <span>Hide</span>
                 </StyledNavLink>
             </StyledMenu>

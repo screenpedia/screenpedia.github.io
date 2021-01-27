@@ -49,7 +49,7 @@ const Loading = () => (
                     <img className="film-img" src={process.env.PUBLIC_URL  + "/media/film.png"} alt="" />
                 </div>
                 <img className="camera" src={process.env.PUBLIC_URL  + "/media/camera.png"} alt="" />
-                Loading, please wait
+                <b style={{marginTop: '10px'}}>Loading, please wait</b>
             </div>
         </Loader>
     </LoaderWrapper>
