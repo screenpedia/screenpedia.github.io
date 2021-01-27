@@ -43,6 +43,7 @@ const StyledNavLink = styled(NavLink)`
     transition: all 0.5s;
     font-weight: bold;
     font-size: unset;
+    justify-content: center;
     &.active{
         background: rgba(0,0,0,0.10);
     }
