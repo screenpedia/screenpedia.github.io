@@ -1,5 +1,5 @@
 import styled from "styled-components"
-import { Link } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
 import { useEffect, useState } from "react"
 import ColorThief from 'colorthief'
 import tinycolor from 'tinycolor2'
@@ -27,6 +27,7 @@ const Banner = styled.div`
         color: ${({light}) => light ? 'black' : 'white'};
     }
     @media(max-width: 991px){
+        display:block;
         border-bottom-right-radius:10px;
     }
 `
@@ -35,8 +36,8 @@ const MediaPoster = styled.img`
     border-radius: 10px;
     margin: 0 20px 0 0;
     display: flex;
-    height: 400px;
-    width: 267px;
+    max-height: 400px;
+    max-width: 267px;
     @media(max-width:991px){
         height: 200px
     }
@@ -44,36 +45,21 @@ const MediaPoster = styled.img`
 
 const MediaData = styled.div`
     display: flex;
-    width: auto;
+    width: 100%;
     flex-direction: column;
-`
-
-const MediaDataAttr = styled.span`
-    &:before{
-        -moz-osx-font-smoothing: grayscale;
-        -webkit-font-smoothing: antialiased;
-        display: inline-flex;
-        align-content: center;
-        align-items: center;
-        justify-content: center;
-        font-style: normal;
-        font-variant: normal;
-        text-rendering: auto;
-        line-height: 1;
-        font-weight: 600;
-        padding: ${({first}) => first ? null : '0 5px'};
-        font-size: 8px;
-        vertical-alignment: center;
-        font-family: "Font Awesome 5 Free";
-        opacity: 0.8;
-        // content: '${({first}) => first ? null : '\f192'}';
-        content: '${({first}) => first ? null : ''}';
+    @media(max-width: 991px){
+        display:block;
+        flex-wrap: wrap;
     }
 `
 
+const MediaDataAttr = styled.div`
+    width: auto;
+    display: flex;
+`
+
 const Genre = styled(Link)`
-    padding: 2px 4px;
-    margin: 0 2px;
+    margin: 2px 10px 2px 0px;;
     border-radius: 10px;
     text-decoration: none;
     transition: 0.5s all;
@@ -102,11 +88,24 @@ const StyledButton = styled.a`
 }
 `
 
+const MediaTitle = styled.h2`
+    display: flex;
+    fontSize: 35px;
+    @media(max-width:991px){
+        flex-wrap: wrap;
+        & h1, & span{
+            width: 100vw;
+            margin: 0!important;
+        }
+    }
+`
+
 const Media = ({data}) => {
     const [r, setR] = useState(null),
         [g, setG] = useState(null),
         [b, setB] = useState(null),
-        [light, setLight] = useState(false)
+        [light, setLight] = useState(false),
+        {type} = useParams()
 
     useEffect(() => {
         setLight(tinycolor(`rgb (${r},${g},${b})`).isLight())
@@ -139,27 +138,33 @@ const Media = ({data}) => {
                     <Banner light={light} backdropSrc={data.backdrop_path} r={r} g={g} b={b}>
                         <MediaPoster src={!!data.poster_path ? `https://image.tmdb.org/t/p/w300_and_h450_bestv2/${data.poster_path}` : 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAJFBMVEX4+vvb4OTx9PXl6ezf4+f19/nt8PLz9vfq7fDi5unc4eTs7/GWhAgrAAACGUlEQVR4nO3b23KqMBiAUQEtsn3/961OtydIJEUmaXCtS7n5v5FTEHc7AAAAAAAAAAAAAAAAAAAAAAAAzvr2PX3pgNf6oXnf8Icjjyv0XZxKh8R8rRTYNF+lU8IOqwU2zaF0TNBa++jFsXRM0H7Fwn3pmKAVA5umdEzQhxXuT/3h0B7/bbbwdrpfevopGRIVnq/dZOHT1WzZfUCpiJdu040uZovuVcskzIhNt2g/LVIw5zrcENuwmcLJHdeS3bREwKzrcJO1z+YKJ99h/IZ138bOtCUCZl2HSz8OL/fXkTVXgfnnxaaLnkt/FhDhxPzjJ7hNNzoQY4fhdYUUTMw+fYr7eEn3NPclYCgx+/QpwvPF9tHHNW4gMffwSR4HbK8fxtYWz4v4aWL26VM8F5z68/cXXTuNn1JMEosUzInVJAROEwvMP++dwEli9ulTvBU4Tsw8e5r3AkeJWSdPFaoZ+lNq4HNixrnTBQK73eSC+OpZ7+H+aC7X0L8SDhwlvn6Y3VVW2P3f0KYG1lbY3ba0iYGVFXYPm9q0wLoKu6dtbVJgVYXdaGOb9ItZRYXjwPMyMeUnwXoKp4FpqilcGlhN4eRhW7JaChd/hQpLU5hAYWEfVDgsfrl0qKRwDaVjghTWX7j9dxO3/37pmrtp6ZSIzb/nvdtNnm8v9Gff1f+A/1tcbPw/MwAAAAAAAAAAAAAAAAAAAAAAALl8A7+jEA62Pbx2AAAAAElFTkSuQmCC'} />
                         <MediaData>
-                            <h2 style={{display:'flex', fontSize: "35px"}}>
-                                {data.title ? data.title : data.name }
-                                {data.release_date && 
+                            <MediaDataAttr style={{opacity: 0.75}}>
+                                {data.tagline}
+                            </MediaDataAttr>
+                            <MediaTitle>
+                                <div>{data.title ? data.title : data.name }</div>
+                                {data.release_date ? 
                                     <span style={{color: light  ? 'black' : 'white', fontWeight: 'normal', marginLeft: '5px', opacity: 0.8}}>
                                         ({data.release_date.split('-')[0]})
+                                    </span> :
+                                    <span style={{color: light  ? 'black' : 'white', fontWeight: 'normal', marginLeft: '5px', opacity: 0.8}}>
+                                        ({data.first_air_date.split('-')[0]})
                                     </span>
                                 }
-                            </h2>
-                            <div>
-                                <MediaDataAttr first={+true}>
-                                    {data.release_date ? data.release_date.split("-").join("/") : "Unknow"}
-                                </MediaDataAttr>
-                                <MediaDataAttr>
-                                    {data.genres && data.genres.map(g =>
-                                        <Genre key={g.id} to={`/genre/${g.id}`}>{g.name}</Genre>
-                                    )}
-                                </MediaDataAttr>
-                                <MediaDataAttr>
-                                    {data.runtime.hours}h {data.runtime.minutes}m 
-                                </MediaDataAttr>
-                            </div>
+                            </MediaTitle>
+                            <MediaDataAttr>
+                                {data.genres && data.genres.map(g =>
+                                    <Genre key={g.id} to={`/genre/${type}/${g.id}`}>{g.name}</Genre>
+                                )}
+                            </MediaDataAttr>
+                            <MediaDataAttr>
+                                {type === "movie" ?
+                                <>
+                                    {data.runtime.hours}h {data.runtime.minutes}m
+                                </> :
+                                <>  
+                                    {data.number_of_seasons} season with {data.number_of_episodes} episodes total                                  </>} 
+                            </MediaDataAttr>
                             {data.video.lenght > 0 && 
                                 <div>
                                     <StyledButton target='_blank' href={`https://www.youtube.com/watch?v=${data.video[0].key}`}>

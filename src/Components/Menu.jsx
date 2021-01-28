@@ -1,5 +1,5 @@
-import React, { useState } from "react"
-import { Link, NavLink} from "react-router-dom"
+import React, { useEffect, useState } from "react"
+import { Link, NavLink } from "react-router-dom"
 import styled from "styled-components"
 
 const StyledMenu = styled.div`
@@ -58,9 +58,11 @@ const StyledNavLink = styled(NavLink)`
         & span{
             transition: all 0.2s ease;
             overflow: hidden;
-            max-width: ${({open}) => open ? '100vh' : '0'};
+            max-width: ${({open}) => open ? '100vw' : '0'};
             padding-right: ${({open}) => open ? '5px' : '0'};
+            max-height: ${({open, div}) => open && div ? '100vh' : !div ? '100vh' : '0'};
         }
+        padding: ${({open, div}) => open && div ? 'auto' : !div ? 'auto' : '0'};
     }
 
     @media (${({hiddenCondition}) => hiddenCondition}){
@@ -86,15 +88,22 @@ const StyledMenuButton = styled(Button)`
     display: flex;
     align-items: center;
     position: fixed;
-    top: 10px;
-    right: 10px;
+    padding: 10px 10px 15px 15px;
+    height: 50px;
+    width: 50px;
+    justify-content:center;
+    border-radius: 0 0 0 50%;
+    background: white;
+    top:0;
+    right:0;
     z-index: 4;
     font-size: 30px;
-    &:hover{
-        background: rgba(0,0,0,0.1);
-    }
+    color: transparent;
     @media (min-width: 991px){
         display: none;
+    }
+    & i::before{
+        color: black;
     }
 `
 
@@ -105,7 +114,13 @@ const Icon = styled.i`
 `
 
 const Menu = () => {
-    const [open, setOpen] = useState(window.innerWidth > 991)
+    const [open, setOpen] = useState(false)
+
+    useEffect(() => {
+        var body = document.querySelector('body')
+        if(open) body.classList.add("oHidden")
+        else body.classList.remove("oHidden")
+    }, [open])
 
     return(
         <>
@@ -113,20 +128,35 @@ const Menu = () => {
                 <i className={`fas fa-${open ? 'times' : 'bars'}`}></i>
             </StyledMenuButton>
             <StyledMenu open={open}>
-                <Link to="/" style={{color: 'black', textDecoration: 'none'}}>
+                <Link replace onClick={() => window.innerWidth < 991 && setOpen(false)} to="/" style={{color: 'black', textDecoration: 'none'}}>
                     <h1 style={{padding:"10px", marginBottom: '5px', display: 'flex'}}>
                         M
                         <div style={{display: 'flex', transition: 'all 0.2s ease', maxWidth: open ? '100vh' : '0', overflow: "hidden"}}>ovies</div>
                     </h1>
                 </Link>
-                <StyledNavLink open={open} exact to="/">
+                <StyledNavLink replace onClick={() => window.innerWidth < 991 && setOpen(false)} open={open} exact to="/">
                     <Icon className={`fas fa-home`}/>
                     <span>Home</span>
                 </StyledNavLink>
-                <StyledNavLink open={open} exact to="/search">
+                <StyledNavLink replace onClick={() => window.innerWidth < 991 && setOpen(false)} open={open} to="/search">
                     <Icon className={`fas fa-search`}/>
                     <span>Search</span>
                 </StyledNavLink>
+
+                <hr style={{width: "50%"}}/>
+                <StyledNavLink div={+true} as="div" open={open} style={{cursor:'auto'}}>
+                    <span style={{padding:'0'}}>Genres</span>
+                </StyledNavLink>
+                <StyledNavLink replace onClick={() => window.innerWidth < 991 && setOpen(false)} open={open} to="/genre/movie">
+                    <Icon className={`fas fa-film`}/>
+                    <span>Movie</span>
+                </StyledNavLink>
+                <StyledNavLink replace onClick={() => window.innerWidth < 991 && setOpen(false)} open={open} to="/genre/tv">
+                    <Icon className={`fas fa-tv`}/>
+                    <span>Tv</span>
+                </StyledNavLink>
+
+                <hr style={{width: "50%"}}/>
                 <StyledNavLink hiddenCondition={'max-width: 991px'} as="button" open={open} onClick={() => setOpen(!open)}>
                     <Icon padding={'0 3px'} style={{transition: '0.2s all linear', transform: `rotate(${open ? '0' : "180deg"})`}} className={`fas fa-chevron-left`}/>
                     <span>Hide</span>

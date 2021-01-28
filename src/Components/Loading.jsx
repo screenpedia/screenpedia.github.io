@@ -19,6 +19,7 @@ const LoaderWrapper = styled.div`
     Loader = styled.div`
         display: flex;
         justify-content: center;
+        width: 100%;
     
         & .container {
             position: relative;

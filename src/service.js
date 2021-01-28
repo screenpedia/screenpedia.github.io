@@ -30,6 +30,14 @@ const Api = {
         if(!query) throw new Error("Query needed")
         return await this.get("search/multi",`query=${query}&page=${page}`);
     },
+    typeGenre: async function(type) {
+        if(!type) throw new Error("Type needed")
+        return await this.get(`genre/${type}/list`);
+    },
+    genreMedia: async function(type, id, page = 1 ) {
+        if(!id) throw new Error("ID needed")
+        return await this.get(`discover/${type}`,`with_genres=${id}&page=${page}`);
+    },
     getRecomendationsById: async function(type, id) {
         if(!type) throw new Error("Type needed")
         else if(!id) throw new Error("ID needed")
@@ -56,7 +64,7 @@ const Api = {
                     };
                 }
                 data = d;
-                data.runtime=formatTime(data.runtime)
+                if(type === 'movie') data.runtime=formatTime(data.runtime)
                 return this.getRecomendationsById(type, id)
             })
             .then(r => {
