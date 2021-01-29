@@ -3,7 +3,6 @@ import Context from '../context'
 import styled from 'styled-components'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import toastify from 'react-toastify'
 
 const UserWrapper = styled.div`
     box-sizing: border-box;

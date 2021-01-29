@@ -52,14 +52,14 @@ const Genre = () => {
         }else{
             history.push('/')
         }
+        return
     }, [id, type, history, page])
 
     return (
         <Section>
-            {!search && !error ? 
-                <Loading /> :
-                error ?
-                    <ErrorComponent error={error} /> :
+            {!search && !error && <Loading /> }
+            {error && <ErrorComponent error={error} />}
+            {!error && search &&
                     <>
                         <SectionTitle>{type.charAt(0).toUpperCase() + type.slice(1)}'s {name} genre</SectionTitle>
                         <Carrousel style={{flexWrap: 'wrap', alignContent:"center", justifyContent:"center"}}>
@@ -67,11 +67,17 @@ const Genre = () => {
                         </Carrousel>
                         <div style={{textAlign:'center'}}>
                             <div style={{display: 'inline-block'}}>
-                                {page > 1 && <PagingLink onClick={() => setPage(page-1)}>&laquo;</PagingLink>}
-                                <PagingLink className={page===1 ? "active" : ''} onClick={() => setPage(1)}>1</PagingLink>
-                                {page !== 1 && page !== totalPages && <PagingLink className="active">{page}</PagingLink>}
-                                <PagingLink className={page===totalPages ? "active" : ''} onClick={() => setPage(totalPages)}>{totalPages}</PagingLink>
-                                {page < totalPages && <PagingLink onClick={() => setPage(page+1)}>&raquo;</PagingLink>}
+                                {page > 1 && 
+                                <>
+                                    <PagingLink onClick={() => setPage(page-1)}>&laquo;</PagingLink>
+                                    <PagingLink onClick={() => setPage(1)}>1</PagingLink>
+                                </>}
+                                <PagingLink className="active">{page}</PagingLink>
+                                {page < totalPages &&
+                                    <>
+                                        <PagingLink onClick={() => setPage(totalPages)}>{totalPages}</PagingLink>
+                                        <PagingLink onClick={() => setPage(page+1)}>&raquo;</PagingLink>
+                                    </>}
                             </div>
                         </div>
                     </>

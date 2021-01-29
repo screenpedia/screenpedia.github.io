@@ -24,7 +24,7 @@ const themes = {
 
 const App = () => {
   const [user, setUser] = useState({loading: true}),
-    [lists, setLists] = useState([]),
+    [lists, setLists] = useState(null),
     [theme, setTheme] = useState(themes.light),
     notify = (text, error = false) => error ? toast.warning(text) : toast.success(text),
     context = {
@@ -42,6 +42,7 @@ const App = () => {
     if(user && !user.loading){
       Api.getListsUser(user.uid, setLists).catch(console.error)
     }
+    return
   }, [user])
 
   return (
@@ -49,7 +50,7 @@ const App = () => {
       <HashRouter>
         <StyledContainer>
           <Menu />
-          <div style={{display: 'block', overflowX: 'auto', width: "100%"}}>
+          <div style={{display: 'block', overflowX: 'auto', width: "100%", boxSizing: 'border-box'}}>
             <MainRouter user={user} />
           </div>
           <ToastContainer
