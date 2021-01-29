@@ -8,6 +8,8 @@ import SectionTitle from '../../Styled/Section/SectionTitle'
 import Carrousel from '../../Styled/Carrousel/Carrousel'
 import CarrouselItem from '../../Styled/Carrousel/CarrouselItem'
 import Loading from '../../Components/Loading'
+import Context from "../../context"
+import Api from "../../service"
 
 const Banner = styled.div`
     background: radial-gradient(rgba(${({r,g,b})=>`${r},${g},${b}`},.75),rgba(${({r,g,b})=>`${r},${g},${b}`},.75)), url(${({backdropSrc}) => backdropSrc ? 'https://image.tmdb.org/t/p/w1280'+backdropSrc : ''});
@@ -105,7 +107,13 @@ const Media = ({data}) => {
         [g, setG] = useState(null),
         [b, setB] = useState(null),
         [light, setLight] = useState(false),
-        {type} = useParams()
+        {type} = useParams(),
+        addToList = (list, title) => {
+            Api.addTitleToList(list.author, list.id, title).catch(console.error)
+        },
+        removeFromList = (list, title) => {
+            Api.removeTitleFromList(list.author, list.id, title).catch(console.error)
+        }
 
     useEffect(() => {
         setLight(tinycolor(`rgb (${r},${g},${b})`).isLight())
@@ -131,62 +139,82 @@ const Media = ({data}) => {
     }, [data.poster_path, data.backdrop_path])
     
     return(
-        <>
-            {!r || !g || !b ? 
-                <Loading/> : 
-                <div>
-                    <Banner light={light} backdropSrc={data.backdrop_path} r={r} g={g} b={b}>
-                        <MediaPoster src={!!data.poster_path ? `https://image.tmdb.org/t/p/w300_and_h450_bestv2/${data.poster_path}` : 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAJFBMVEX4+vvb4OTx9PXl6ezf4+f19/nt8PLz9vfq7fDi5unc4eTs7/GWhAgrAAACGUlEQVR4nO3b23KqMBiAUQEtsn3/961OtydIJEUmaXCtS7n5v5FTEHc7AAAAAAAAAAAAAAAAAAAAAAAAzvr2PX3pgNf6oXnf8Icjjyv0XZxKh8R8rRTYNF+lU8IOqwU2zaF0TNBa++jFsXRM0H7Fwn3pmKAVA5umdEzQhxXuT/3h0B7/bbbwdrpfevopGRIVnq/dZOHT1WzZfUCpiJdu040uZovuVcskzIhNt2g/LVIw5zrcENuwmcLJHdeS3bREwKzrcJO1z+YKJ99h/IZ138bOtCUCZl2HSz8OL/fXkTVXgfnnxaaLnkt/FhDhxPzjJ7hNNzoQY4fhdYUUTMw+fYr7eEn3NPclYCgx+/QpwvPF9tHHNW4gMffwSR4HbK8fxtYWz4v4aWL26VM8F5z68/cXXTuNn1JMEosUzInVJAROEwvMP++dwEli9ulTvBU4Tsw8e5r3AkeJWSdPFaoZ+lNq4HNixrnTBQK73eSC+OpZ7+H+aC7X0L8SDhwlvn6Y3VVW2P3f0KYG1lbY3ba0iYGVFXYPm9q0wLoKu6dtbVJgVYXdaGOb9ItZRYXjwPMyMeUnwXoKp4FpqilcGlhN4eRhW7JaChd/hQpLU5hAYWEfVDgsfrl0qKRwDaVjghTWX7j9dxO3/37pmrtp6ZSIzb/nvdtNnm8v9Gff1f+A/1tcbPw/MwAAAAAAAAAAAAAAAAAAAAAAALl8A7+jEA62Pbx2AAAAAElFTkSuQmCC'} />
-                        <MediaData>
-                            <MediaDataAttr style={{opacity: 0.75}}>
-                                {data.tagline}
-                            </MediaDataAttr>
-                            <MediaTitle>
-                                <div>{data.title ? data.title : data.name }</div>
-                                {data.release_date ? 
-                                    <span style={{color: light  ? 'black' : 'white', fontWeight: 'normal', marginLeft: '5px', opacity: 0.8}}>
-                                        ({data.release_date.split('-')[0]})
-                                    </span> :
-                                    <span style={{color: light  ? 'black' : 'white', fontWeight: 'normal', marginLeft: '5px', opacity: 0.8}}>
-                                        ({data.first_air_date.split('-')[0]})
-                                    </span>
-                                }
-                            </MediaTitle>
-                            <MediaDataAttr>
-                                {data.genres && data.genres.map(g =>
-                                    <Genre key={g.id} to={`/genre/${type}/${g.id}`}>{g.name}</Genre>
-                                )}
-                            </MediaDataAttr>
-                            <MediaDataAttr>
-                                {type === "movie" ?
-                                <>
-                                    {data.runtime.hours}h {data.runtime.minutes}m
-                                </> :
-                                <>  
-                                    {data.number_of_seasons} season with {data.number_of_episodes} episodes total                                  </>} 
-                            </MediaDataAttr>
-                            {data.video.lenght > 0 && 
-                                <div>
-                                    <StyledButton target='_blank' href={`https://www.youtube.com/watch?v=${data.video[0].key}`}>
-                                        <span className="fas fa-play"></span>
-                                    </StyledButton>
-                                </div>
-                            }
-                            <hr style={{background: light  ? 'black' : 'white', width: '50%', height: '0.1px', margin:'5px 0', border: 0}}/>
-                            <div>
-                                <b>Overview</b>
-                                <p>{data.overview}</p>
+        <Context.Consumer>
+            {({lists, user}) => (
+                <>
+                    {!r || !g || !b ? 
+                        <Loading/> : 
+                        <div>
+                            <Banner light={light} backdropSrc={data.backdrop_path} r={r} g={g} b={b}>
+                                <MediaPoster src={!!data.poster_path ? `https://image.tmdb.org/t/p/w300_and_h450_bestv2/${data.poster_path}` : 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAJFBMVEX4+vvb4OTx9PXl6ezf4+f19/nt8PLz9vfq7fDi5unc4eTs7/GWhAgrAAACGUlEQVR4nO3b23KqMBiAUQEtsn3/961OtydIJEUmaXCtS7n5v5FTEHc7AAAAAAAAAAAAAAAAAAAAAAAAzvr2PX3pgNf6oXnf8Icjjyv0XZxKh8R8rRTYNF+lU8IOqwU2zaF0TNBa++jFsXRM0H7Fwn3pmKAVA5umdEzQhxXuT/3h0B7/bbbwdrpfevopGRIVnq/dZOHT1WzZfUCpiJdu040uZovuVcskzIhNt2g/LVIw5zrcENuwmcLJHdeS3bREwKzrcJO1z+YKJ99h/IZ138bOtCUCZl2HSz8OL/fXkTVXgfnnxaaLnkt/FhDhxPzjJ7hNNzoQY4fhdYUUTMw+fYr7eEn3NPclYCgx+/QpwvPF9tHHNW4gMffwSR4HbK8fxtYWz4v4aWL26VM8F5z68/cXXTuNn1JMEosUzInVJAROEwvMP++dwEli9ulTvBU4Tsw8e5r3AkeJWSdPFaoZ+lNq4HNixrnTBQK73eSC+OpZ7+H+aC7X0L8SDhwlvn6Y3VVW2P3f0KYG1lbY3ba0iYGVFXYPm9q0wLoKu6dtbVJgVYXdaGOb9ItZRYXjwPMyMeUnwXoKp4FpqilcGlhN4eRhW7JaChd/hQpLU5hAYWEfVDgsfrl0qKRwDaVjghTWX7j9dxO3/37pmrtp6ZSIzb/nvdtNnm8v9Gff1f+A/1tcbPw/MwAAAAAAAAAAAAAAAAAAAAAAALl8A7+jEA62Pbx2AAAAAElFTkSuQmCC'} />
+                                <MediaData>
+                                    <MediaDataAttr style={{opacity: 0.75}}>
+                                        {data.tagline}
+                                    </MediaDataAttr>
+                                    <MediaTitle>
+                                        <div>{data.title ? data.title : data.name }</div>
+                                        {data.release_date ? 
+                                            <span style={{color: light  ? 'black' : 'white', fontWeight: 'normal', marginLeft: '5px', opacity: 0.8}}>
+                                                ({data.release_date.split('-')[0]})
+                                            </span> :
+                                            <span style={{color: light  ? 'black' : 'white', fontWeight: 'normal', marginLeft: '5px', opacity: 0.8}}>
+                                                ({data.first_air_date.split('-')[0]})
+                                            </span>
+                                        }
+                                    </MediaTitle>
+                                    <MediaDataAttr>
+                                        {data.genres && data.genres.map(g =>
+                                            <Genre key={g.id} to={`/genre/${type}/${g.id}`}>{g.name}</Genre>
+                                        )}
+                                    </MediaDataAttr>
+                                    <MediaDataAttr>
+                                        {type === "movie" ?
+                                        <>
+                                            {data.runtime.hours}h {data.runtime.minutes}m
+                                        </> :
+                                        <>  
+                                            {data.number_of_seasons} season with {data.number_of_episodes} episodes total                                  </>} 
+                                    </MediaDataAttr>
+                                    {data.video.lenght > 0 && 
+                                        <div>
+                                            <StyledButton target='_blank' href={`https://www.youtube.com/watch?v=${data.video[0].key}`}>
+                                                <span className="fas fa-play"></span>
+                                            </StyledButton>
+                                        </div>
+                                    }
+                                    <hr style={{background: 'transparent', width: '50%', height: '0.1px', margin:'5px 0', border: 0}}/>
+                                    <div>
+                                        <b>Overview</b>
+                                        <p>{data.overview}</p>
+                                    </div>
+                                    {user && user.loading ? null : 
+                                            <>
+                                                <hr style={{background: 'transparent', width: '50%', height: '0.1px', margin:'5px 0', border: 0}}/>
+                                                <div>
+                                                    {lists.length > 0 && !lists[0].list.find(t => t.id.toString() === data.id.toString()) ?
+                                                        <StyledButton onClick={() => addToList(lists[0], {id: data.id, name: type === "movie" ? data.title : data.name, type: type})} style={{borderRadius: '10px', height:'auto', width:'auto', padding: '5px 10px', background: "rgba(0,255,0,0.5)", fontWeight: 'bold', color: light  ? 'black' : 'white', margin: 0, cursor: "pointer"}}>
+                                                            Add to list
+                                                        </StyledButton>
+                                                        :
+                                                        <StyledButton onClick={() => removeFromList(lists[0], {id: data.id, name: type === "movie" ? data.title : data.name, type: type})} style={{borderRadius: '10px', height:'auto', width:'auto', padding: '5px 10px', background: "rgba(255,0,0,0.5)", fontWeight: 'bold', color: light  ? 'black' : 'white', margin: 0, cursor: "pointer"}}>
+                                                            Remove from list
+                                                        </StyledButton>
+                                                    }
+                                                </div>
+                                            </>
+                                    }
+                                </MediaData>
+                            </Banner>
+                            <div style={{padding: '10px'}}>
+                                <SectionTitle>Recomendations</SectionTitle>
+                                <Carrousel>
+                                    {data.recomendations.map((d, i) => <CarrouselItem key={i} data={d} firstChild={i === 0} lastChild={i === data.recomendations.length-1}/>)}
+                                </Carrousel>
                             </div>
-                        </MediaData>
-                    </Banner>
-                    <div style={{padding: '10px'}}>
-                        <SectionTitle>Recomendations</SectionTitle>
-                        <Carrousel>
-                            {data.recomendations.map((d, i) => <CarrouselItem key={i} data={d} firstChild={i === 0} lastChild={i === data.recomendations.length-1}/>)}
-                        </Carrousel>
-                    </div>
-                </div>}
-        </>
+                        </div>}
+                </>
+            )}
+        </Context.Consumer>
     )
 }
 

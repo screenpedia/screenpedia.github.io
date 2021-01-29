@@ -18,8 +18,12 @@ const Genre = styled(Link)`
     text-decoration: none;
     color: black;
     transition: 0.5s all;
+    width: calc(50% - 20px - 20px);
     &:hover{
         background: rgba(0,0,0,0.2);
+    }
+    @media(max-width: 991px){
+        width: calc(100% - 20px);
     }
 `
 
@@ -34,12 +38,12 @@ const TypeGenre = () => {
 
     return(
         <Section>
-            <SectionTitle>{type} genres</SectionTitle>
+            <SectionTitle>{type.charAt(0).toUpperCase() + type.slice(1)} genres</SectionTitle>
             {!data && !error ?
                 <Loading /> : 
                 error ?
                     <Error error={error} /> :
-                    <Container style={{flexWrap: 'wrap', flexDirection: 'column'}}>
+                    <Container style={{flexWrap: 'wrap', flexDirection: 'row'}}>
                         {data.map(genre => (
                             <Genre key={genre.id} to={`/genre/${type}/${genre.id}`}>
                                 {genre.name}

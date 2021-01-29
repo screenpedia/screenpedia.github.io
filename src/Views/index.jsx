@@ -1,12 +1,22 @@
-import { Redirect, Route, Switch} from "react-router-dom";
+import { Redirect, Route, Switch, useHistory} from "react-router-dom";
+
+// import Context from '../context'
 
 import Home from './Home'
 import Title from './Title'
 import Search from './Search'
 import GenreList from './Genre'
 import GenreMedia from './Genre/Genre'
+import { useEffect } from "react";
+import User from "./User";
 
-const MainRouter = () => {
+const MainRouter = ({user}) => {
+    const history = useHistory()
+    
+    useEffect(() => {
+      if(!user && history.location.pathname === "/user") history.push('/')
+    }, [history, user])
+
     return (
         <Switch>
             <Route exact path="/" component={Home} />
@@ -19,9 +29,10 @@ const MainRouter = () => {
             <Route path={["/genre/movie", "/genre/tv"]}>
                 <Switch>
                     <Route exact path="/genre/:type" component={() => <GenreList />} />
-                    <Route exact path="/genre/:type/:name" component={() => <GenreMedia />} />
+                    <Route exact path="/genre/:type/:id" component={() => <GenreMedia />} />
                 </Switch>
             </Route>
+            {user && !user.loading && <Route exact path="/user" component={() => <User />} /> }
             <Redirect to={'/'} />
         </Switch>
     )

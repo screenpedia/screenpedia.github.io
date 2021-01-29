@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react"
 import { Link, NavLink } from "react-router-dom"
 import styled from "styled-components"
+import Context from "../context"
+import Api from '../service'
 
 const StyledMenu = styled.div`
     width: auto;
@@ -11,24 +13,23 @@ const StyledMenu = styled.div`
     top: 0;
     left: 0;
     display: flex;
-    flex-shrink:0;
+    flex-shrink: 0;
     flex-direction: column;
     z-index: 3;
     transition: all 0.2s ease;
+    overflow-y: auto;
     @media (max-width: 991px){
         width: 100%;
-        overflow: hidden;
         width: calc(100vw - 20px);
         max-width: ${({open}) => open ? 'calc(100vw - 20px)' : '0px'};
         position: fixed;
         padding: ${({open}) => open ? '10px' : '10px 0px'};
-        justify-content: center;
         align-items: center;
     }
 `
 
 const StyledNavLink = styled(NavLink)`
-    margin-bottom: 5px;
+    margin: 2px 0;
     display: flex;
     border: none;
     width: auto;
@@ -39,11 +40,12 @@ const StyledNavLink = styled(NavLink)`
     background: transparent;
     color: black;
     text-decoration: none;
-    cursor: pointer;
+    cursor: ${({div}) => div ? "auto" : "pointer"};
     transition: all 0.5s;
     font-weight: bold;
     font-size: unset;
     justify-content: center;
+    white-space: nowrap;
     &.active{
         background: rgba(0,0,0,0.10);
     }
@@ -60,6 +62,13 @@ const StyledNavLink = styled(NavLink)`
             overflow: hidden;
             max-width: ${({open}) => open ? '100vw' : '0'};
             padding-right: ${({open}) => open ? '5px' : '0'};
+            max-height: ${({open, div}) => open && div ? '100vh' : !div ? '100vh' : '0'};
+        }
+        & i{
+            transition: all 0.2s ease;
+            overflow: hidden;
+            padding: ${({open, div}) => open && div ? 'auto' : !div ? 'auto' : '0'};
+            max-width: ${({open, div}) => open && div ? '100vw' : !div ? '100vw' : '0'};
             max-height: ${({open, div}) => open && div ? '100vh' : !div ? '100vh' : '0'};
         }
         padding: ${({open, div}) => open && div ? 'auto' : !div ? 'auto' : '0'};
@@ -114,7 +123,13 @@ const Icon = styled.i`
 `
 
 const Menu = () => {
-    const [open, setOpen] = useState(false)
+    const [open, setOpen] = useState(window.innerWidth > 991),
+        login = (callback) => {
+            Api.login().catch(console.error)
+        },
+        logout = (callback) => {
+            Api.logout().catch(console.error)
+        }
 
     useEffect(() => {
         var body = document.querySelector('body')
@@ -123,46 +138,77 @@ const Menu = () => {
     }, [open])
 
     return(
-        <>
-            <StyledMenuButton onClick={() => setOpen(!open)}>
-                <i className={`fas fa-${open ? 'times' : 'bars'}`}></i>
-            </StyledMenuButton>
-            <StyledMenu open={open}>
-                <Link replace onClick={() => window.innerWidth < 991 && setOpen(false)} to="/" style={{color: 'black', textDecoration: 'none'}}>
-                    <h1 style={{padding:"10px", marginBottom: '5px', display: 'flex'}}>
-                        M
-                        <div style={{display: 'flex', transition: 'all 0.2s ease', maxWidth: open ? '100vh' : '0', overflow: "hidden"}}>ovies</div>
-                    </h1>
-                </Link>
-                <StyledNavLink replace onClick={() => window.innerWidth < 991 && setOpen(false)} open={open} exact to="/">
-                    <Icon className={`fas fa-home`}/>
-                    <span>Home</span>
-                </StyledNavLink>
-                <StyledNavLink replace onClick={() => window.innerWidth < 991 && setOpen(false)} open={open} to="/search">
-                    <Icon className={`fas fa-search`}/>
-                    <span>Search</span>
-                </StyledNavLink>
-
-                <hr style={{width: "50%"}}/>
-                <StyledNavLink div={+true} as="div" open={open} style={{cursor:'auto'}}>
-                    <span style={{padding:'0'}}>Genres</span>
-                </StyledNavLink>
-                <StyledNavLink replace onClick={() => window.innerWidth < 991 && setOpen(false)} open={open} to="/genre/movie">
-                    <Icon className={`fas fa-film`}/>
-                    <span>Movie</span>
-                </StyledNavLink>
-                <StyledNavLink replace onClick={() => window.innerWidth < 991 && setOpen(false)} open={open} to="/genre/tv">
-                    <Icon className={`fas fa-tv`}/>
-                    <span>Tv</span>
-                </StyledNavLink>
-
-                <hr style={{width: "50%"}}/>
-                <StyledNavLink hiddenCondition={'max-width: 991px'} as="button" open={open} onClick={() => setOpen(!open)}>
-                    <Icon padding={'0 3px'} style={{transition: '0.2s all linear', transform: `rotate(${open ? '0' : "180deg"})`}} className={`fas fa-chevron-left`}/>
-                    <span>Hide</span>
-                </StyledNavLink>
-            </StyledMenu>
-        </>
+        <Context.Consumer>
+            {({user, setUser}) => (
+                <>
+                    <StyledMenuButton onClick={() => setOpen(!open)}>
+                        <i className={`fas fa-${open ? 'times' : 'bars'}`}></i>
+                    </StyledMenuButton>
+                    <StyledMenu open={open}>
+                        <Link replace onClick={() => window.innerWidth < 991 && setOpen(false)} to="/" style={{color: 'black', textDecoration: 'none'}}>
+                            <h1 style={{padding:"10px", marginBottom: '5px', display: 'flex'}}>
+                                M
+                                <div style={{display: 'flex', transition: 'all 0.2s ease', maxWidth: open ? '100vh' : '0', overflow: "hidden"}}>ovies</div>
+                            </h1>
+                        </Link>
+                        <StyledNavLink replace onClick={() => window.innerWidth < 991 && setOpen(false)} open={open} exact to="/">
+                            <Icon className={`fas fa-home`}/>
+                            <span>Home</span>
+                        </StyledNavLink>
+                        <StyledNavLink replace onClick={() => window.innerWidth < 991 && setOpen(false)} open={open} to="/search">
+                            <Icon className={`fas fa-search`}/>
+                            <span>Search</span>
+                        </StyledNavLink>
+        
+                        <hr style={{width: "50%"}}/>
+                        <StyledNavLink div={+true} as="div" open={open} >
+                            <span style={{padding:'0'}}>Genres</span>
+                        </StyledNavLink>
+                        <StyledNavLink replace onClick={() => window.innerWidth < 991 && setOpen(false)} open={open} to="/genre/movie">
+                            <Icon className={`fas fa-film`}/>
+                            <span>Movie</span>
+                        </StyledNavLink>
+                        <StyledNavLink replace onClick={() => window.innerWidth < 991 && setOpen(false)} open={open} to="/genre/tv">
+                            <Icon className={`fas fa-tv`}/>
+                            <span>Tv</span>
+                        </StyledNavLink>
+                        
+                        <hr style={{width: "50%"}}/>
+                        <StyledNavLink div={+true} as="div" open={open} >
+                            <span style={{padding:'0'}}>User</span>
+                        </StyledNavLink>
+                        {!user ? 
+                            <StyledNavLink as="button" onClick={() => login(setUser)} open={open}>
+                                <Icon className={`fas fa-sign-in-alt`}/>
+                                <span>Login</span>
+                            </StyledNavLink>
+                            :
+                            user.loading ? 
+                                <StyledNavLink as="div" div={+true}>
+                                    <img alt="Loading spinner" src={process.env.PUBLIC_URL + "/media/spinner.gif"} style={{display: "block", margin: 'auto'}} height="40" width="40" />
+                                </StyledNavLink>
+                                :
+                                <>
+                                    <StyledNavLink replace onClick={() => window.innerWidth < 991 && setOpen(false)} open={open} to="/user">
+                                        <Icon className={`fas fa-user`}/>
+                                        <span>{user.displayName.split(" ")[0]}</span>
+                                    </StyledNavLink>
+                                    <StyledNavLink as="button" div={+true} onClick={() => logout(setUser)} open={open}>
+                                        <Icon className={`fas fa-sign-out-alt`}/>
+                                        <span>Logout</span>
+                                    </StyledNavLink>
+                                </>
+                        }
+        
+                        <hr style={{width: "50%", border: window.innerWidth > 991 ? '' : 'none'}}/>
+                        <StyledNavLink hiddenCondition={'max-width: 991px'} as="button" open={open} onClick={() => setOpen(!open)}>
+                            <Icon padding={'0 3px'} style={{transition: '0.2s all linear', transform: `rotate(${open ? '0' : "180deg"})`}} className={`fas fa-chevron-left`}/>
+                            <span>Hide</span>
+                        </StyledNavLink>
+                    </StyledMenu>
+                </>
+            )}
+        </Context.Consumer>
     )
 }
 

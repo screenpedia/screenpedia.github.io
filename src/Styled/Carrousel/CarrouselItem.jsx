@@ -125,8 +125,8 @@ const CarrouselItem = ({data, lastChild, firstChild, rotate}) => {
                 </CarrouselItemOverview>
                 {data.overview && 
                     <CarrouselItemOverviewExpandButton onClick={() => setOpen(!open)}>
-                            {open ? 'Hide overview' : 'Show overview'}
-                        </CarrouselItemOverviewExpandButton>
+                        {open ? 'Hide overview' : 'Show overview'}
+                    </CarrouselItemOverviewExpandButton>
                 }
             </CarrouselItemData>
         </CarrouselItemWrapper>

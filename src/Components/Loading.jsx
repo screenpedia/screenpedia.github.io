@@ -46,10 +46,10 @@ const Loading = () => (
         <Loader>
             <div className="container">
                 <div className="film">
-                    <img className="film-img" src={process.env.PUBLIC_URL  + "/media/film.png"} alt="" />
-                    <img className="film-img" src={process.env.PUBLIC_URL  + "/media/film.png"} alt="" />
+                    <img alt="Film ilustration as loading spinner" className="film-img" src={process.env.PUBLIC_URL  + "/media/film.png"} />
+                    <img alt="Film ilustration as loading spinner" className="film-img" src={process.env.PUBLIC_URL  + "/media/film.png"} />
                 </div>
-                <img className="camera" src={process.env.PUBLIC_URL  + "/media/camera.png"} alt="" />
+                <img alt="Camera loading ilustration" className="camera" src={process.env.PUBLIC_URL  + "/media/camera.png"} />
                 <b style={{marginTop: '10px'}}>Loading, please wait</b>
             </div>
         </Loader>

@@ -35,14 +35,16 @@ const Genre = () => {
         [error, setError] = useState(null),
         [page, setPage] = useState(1),
         [totalPages, setTotalPages] = useState(0),
+        [name, setName] = useState(""),
         history = useHistory(),
-        {name, type} = useParams()
-        
+        {type, id} = useParams()
+
     useEffect(() => {
-        if(name !== ""){
-            api.genreMedia(type, name, page)
+        if(id && id !== ""){
+            api.genreMedia(type, id, page)
                 .then(res => {
                     if(res.total_results === 0) throw new Error("No movie/serie match with input")
+                    setName(res.name)
                     setSearch(res.results)
                     setTotalPages(Math.ceil(res.total_results / 20))
                 })
@@ -50,31 +52,29 @@ const Genre = () => {
         }else{
             history.push('/')
         }
-    }, [name, type, history, page])
+    }, [id, type, history, page])
 
     return (
         <Section>
-            <SectionTitle>Movie's {name} genre</SectionTitle>
-            {!name ?
-                <p style={{textAlign:"center"}}>Waiting to search</p> :
-                !search && !error ? 
-                    <Loading /> :
-                    error ?
-                        <ErrorComponent error={error} /> :
-                        <>
-                            <Carrousel style={{flexWrap: 'wrap', alignContent:"center", justifyContent:"center"}}>
-                                {search.map((data, index) => <CarrouselItem key={index} data={data}/>)}
-                            </Carrousel>
-                            <div style={{textAlign:'center'}}>
-                                <div style={{display: 'inline-block'}}>
-                                    {page > 1 && <PagingLink onClick={() => setPage(page-1)}>&laquo;</PagingLink>}
-                                    <PagingLink className={page===1 ? "active" : ''} onClick={() => setPage(1)}>1</PagingLink>
-                                    {page !== 1 && page !== totalPages && <PagingLink className="active">{page}</PagingLink>}
-                                    <PagingLink className={page===totalPages ? "active" : ''} onClick={() => setPage(totalPages)}>{totalPages}</PagingLink>
-                                    {page < totalPages && <PagingLink onClick={() => setPage(page+1)}>&raquo;</PagingLink>}
-                                </div>
+            {!search && !error ? 
+                <Loading /> :
+                error ?
+                    <ErrorComponent error={error} /> :
+                    <>
+                        <SectionTitle>{type.charAt(0).toUpperCase() + type.slice(1)}'s {name} genre</SectionTitle>
+                        <Carrousel style={{flexWrap: 'wrap', alignContent:"center", justifyContent:"center"}}>
+                            {search.map((data, index) => <CarrouselItem key={index} data={data}/>)}
+                        </Carrousel>
+                        <div style={{textAlign:'center'}}>
+                            <div style={{display: 'inline-block'}}>
+                                {page > 1 && <PagingLink onClick={() => setPage(page-1)}>&laquo;</PagingLink>}
+                                <PagingLink className={page===1 ? "active" : ''} onClick={() => setPage(1)}>1</PagingLink>
+                                {page !== 1 && page !== totalPages && <PagingLink className="active">{page}</PagingLink>}
+                                <PagingLink className={page===totalPages ? "active" : ''} onClick={() => setPage(totalPages)}>{totalPages}</PagingLink>
+                                {page < totalPages && <PagingLink onClick={() => setPage(page+1)}>&raquo;</PagingLink>}
                             </div>
-                        </>
+                        </div>
+                    </>
             }
         </Section>
     )
