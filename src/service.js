@@ -101,7 +101,6 @@ const Api = {
         return await firebase.auth()
             .signInWithPopup(new firebase.auth.GoogleAuthProvider())
             .then((result) => {
-                console.log(result.credential);
                 return result.user;
             });
     },

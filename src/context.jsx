@@ -6,7 +6,8 @@ const Context = React.createContext({
     themes: null,
     theme: null,
     setTheme: () => {},
-    lists: []
+    lists: [],
+    notify: () => {}
 })
 
 export default Context;

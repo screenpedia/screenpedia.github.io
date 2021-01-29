@@ -3,6 +3,7 @@ import Context from '../context'
 import styled from 'styled-components'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import toastify from 'react-toastify'
 
 const UserWrapper = styled.div`
     box-sizing: border-box;
@@ -102,16 +103,23 @@ StyledTitle = styled.div`
     background: rgba(255,255,255,0.5);
     margin-top: 5px;
     transition: 0.5s all;
-    & div button{
-        opacity: 0;
+    @media(min-width: 991px){
+        & div button{
+            opacity: 0;
+        }
     }
     &:hover div button{
         opacity: 1;
     }
 `,
-Title = ({userId, listId, data}) => {
+Title = ({notify, userId, listId, data}) => {
     const del = () => {
-        api.removeTitleFromList(userId, listId, data).catch(console.error)
+        api.removeTitleFromList(userId, listId, data)
+            .then(notify("Successfully deleted"))
+            .catch((err) => {
+                notify("Ups somthing wents wrong", true)
+                console.error(err)
+            })
     }
 
     return (
@@ -125,18 +133,28 @@ Title = ({userId, listId, data}) => {
         </StyledTitle>
     )
 },
-List = ({unique, data, userId}) => {
+List = ({unique, data, userId, notify}) => {
     const [edit, setEdit] = useState(false),
         [newName, setNewName] = useState(data.name),
         [open, setOpen] = useState(unique),
         del = () => {
             if(window.confirm(`Do you want to delete ${data.name} list?`)){
-                api.deleteList(data.author, data.id).catch(console.error)
+                api.deleteList(data.author, data.id)
+                    .then(notify("Successfully deleted"))
+                    .catch((err) => {
+                        notify("Ups somthing wents wrong", true)
+                        console.error(err)
+                    })
             }
         },
         confirmNameEdit = () => {
             if(newName !== data.name &&window.confirm(`Do you want to save changes?`)){
-                api.updateName(data.author, data.id, newName).catch(console.error)
+                api.updateName(data.author, data.id, newName)
+                    .then(notify("Successfully edited"))
+                    .catch((err) => {
+                        notify("Ups somthing wents wrong", true)
+                        console.error(err)
+                    })
             }
             setEdit(false)
         }
@@ -155,7 +173,9 @@ List = ({unique, data, userId}) => {
                     }
                 </div>
                 <Actions>
-                    {!unique && <Action onClick={()=>setOpen(!open)} className='fas fa-chevron-up' style={{transform: `rotate(${open ? '180deg' : '0'})`}} />}
+                    {!unique &&
+                        <Action onClick={()=>setOpen(!open)} className='fas fa-chevron-up' style={{transform: `rotate(${open ? '180deg' : '0'})`}} />
+                    }
                     <Action onClick={()=>setEdit(!edit)} className={`fas fa-${edit ? 'times' : 'pen'}`} />
                     {edit ? 
                         <Action onClick={confirmNameEdit} className="fas fa-check" />
@@ -166,7 +186,7 @@ List = ({unique, data, userId}) => {
                 </Actions>
             </StyledListHeader>
             <StyledListData open={open}>
-                {data.list.map(title => <Title key={title.id} userId={userId} listId={data.id} data={title} />)}
+                {data.list.map(title => <Title key={title.id} notify={notify} userId={userId} listId={data.id} data={title} />)}
             </StyledListData>
         </StyledList>
     )
@@ -174,12 +194,12 @@ List = ({unique, data, userId}) => {
 User = () => {
     return (
         <Context.Consumer>
-            {({user, lists}) => (
+            {({user, lists, notify}) => (
                 <UserWrapper>
                     <h2 style={{maxWidth: "calc(100% - 40px)"}}>{user.displayName}</h2>
                     <StyledLists>
                         {lists.map(list => (
-                            <List unique={lists.length === 1} key={list.id} data={list} userId={user.uid} />
+                            <List notify={notify} unique={lists.length === 1} key={list.id} data={list} userId={user.uid} />
                         ))}
                     </StyledLists>
                 </UserWrapper>

@@ -124,11 +124,17 @@ const Icon = styled.i`
 
 const Menu = () => {
     const [open, setOpen] = useState(window.innerWidth > 991),
-        login = (callback) => {
-            Api.login().catch(console.error)
+        login = (setUser, notify) => {
+            Api.login().then(u => {
+                notify("Welcome " + u.displayName + "! ♥")
+                setUser(u)
+            }).catch(console.error)
         },
-        logout = (callback) => {
-            Api.logout().catch(console.error)
+        logout = (setUser, notify, user) => {
+            Api.logout().then(u => {
+                notify("Bay " + user.displayName + "! 😞")
+                setUser(u)
+            }).catch(console.error)
         }
 
     useEffect(() => {
@@ -139,7 +145,7 @@ const Menu = () => {
 
     return(
         <Context.Consumer>
-            {({user, setUser}) => (
+            {({user, setUser, notify}) => (
                 <>
                     <StyledMenuButton onClick={() => setOpen(!open)}>
                         <i className={`fas fa-${open ? 'times' : 'bars'}`}></i>
@@ -178,7 +184,7 @@ const Menu = () => {
                             <span style={{padding:'0'}}>User</span>
                         </StyledNavLink>
                         {!user ? 
-                            <StyledNavLink as="button" onClick={() => login(setUser)} open={open}>
+                            <StyledNavLink as="button" onClick={() => login(setUser, notify, user)} open={open}>
                                 <Icon className={`fas fa-sign-in-alt`}/>
                                 <span>Login</span>
                             </StyledNavLink>
@@ -193,7 +199,7 @@ const Menu = () => {
                                         <Icon className={`fas fa-user`}/>
                                         <span>{user.displayName.split(" ")[0]}</span>
                                     </StyledNavLink>
-                                    <StyledNavLink as="button" div={+true} onClick={() => logout(setUser)} open={open}>
+                                    <StyledNavLink as="button" div={+true} onClick={() => logout(setUser, notify, user)} open={open} style={{cursor:'pointer'}}>
                                         <Icon className={`fas fa-sign-out-alt`}/>
                                         <span>Logout</span>
                                     </StyledNavLink>

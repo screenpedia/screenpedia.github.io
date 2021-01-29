@@ -102,18 +102,48 @@ const MediaTitle = styled.h2`
     }
 `
 
+const AddToListButton = ({data, type, light}) => {
+    const addToList = (list, title, notify) => {
+        Api.addTitleToList(list.author, list.id, title)
+            .then(notify("Successfully added"))
+            .catch(err => {
+                console.error(err)
+                notify("Ups somthing wents wrong", true)
+            })
+    },
+    removeFromList = (list, title, notify) => {
+        Api.removeTitleFromList(list.author, list.id, title)
+            .then(notify("Successfully removed"))
+            .catch(err => {
+                console.error(err)
+                notify("Ups somthing wents wrong", true)
+            })
+    }
+    return (
+        <Context.Consumer>
+            {({lists, notify}) => (
+                <>
+                    {lists.length > 0 && !lists[0].list.find(t => t.id.toString() === data.id.toString()) ?
+                        <StyledButton onClick={() => addToList(lists[0], {id: data.id, name: type === "movie" ? data.title : data.name, type: type}, notify)} style={{borderRadius: '10px', height:'auto', width:'auto', padding: '5px 10px', background: "rgba(0,255,0,0.5)", fontWeight: 'bold', color: light  ? 'black' : 'white', margin: 0, cursor: "pointer"}}>
+                            Add to list
+                        </StyledButton>
+                        :
+                        <StyledButton onClick={() => removeFromList(lists[0], {id: data.id, name: type === "movie" ? data.title : data.name, type: type}, notify)} style={{borderRadius: '10px', height:'auto', width:'auto', padding: '5px 10px', background: "rgba(255,0,0,0.5)", fontWeight: 'bold', color: light  ? 'black' : 'white', margin: 0, cursor: "pointer"}}>
+                            Remove from list
+                        </StyledButton>
+                    }
+                </>
+            )}
+        </Context.Consumer>
+    )
+}
+
 const Media = ({data}) => {
     const [r, setR] = useState(null),
         [g, setG] = useState(null),
         [b, setB] = useState(null),
         [light, setLight] = useState(false),
-        {type} = useParams(),
-        addToList = (list, title) => {
-            Api.addTitleToList(list.author, list.id, title).catch(console.error)
-        },
-        removeFromList = (list, title) => {
-            Api.removeTitleFromList(list.author, list.id, title).catch(console.error)
-        }
+        {type} = useParams()
 
     useEffect(() => {
         setLight(tinycolor(`rgb (${r},${g},${b})`).isLight())
@@ -140,7 +170,7 @@ const Media = ({data}) => {
     
     return(
         <Context.Consumer>
-            {({lists, user}) => (
+            {({user}) => (
                 <>
                     {!r || !g || !b ? 
                         <Loading/> : 
@@ -153,14 +183,10 @@ const Media = ({data}) => {
                                     </MediaDataAttr>
                                     <MediaTitle>
                                         <div>{data.title ? data.title : data.name }</div>
-                                        {data.release_date ? 
+                                        
                                             <span style={{color: light  ? 'black' : 'white', fontWeight: 'normal', marginLeft: '5px', opacity: 0.8}}>
-                                                ({data.release_date.split('-')[0]})
-                                            </span> :
-                                            <span style={{color: light  ? 'black' : 'white', fontWeight: 'normal', marginLeft: '5px', opacity: 0.8}}>
-                                                ({data.first_air_date.split('-')[0]})
+                                                ({data.release_date ? data.release_date.split('-')[0] : data.first_air_date.split('-')[0]})
                                             </span>
-                                        }
                                     </MediaTitle>
                                     <MediaDataAttr>
                                         {data.genres && data.genres.map(g =>
@@ -169,18 +195,15 @@ const Media = ({data}) => {
                                     </MediaDataAttr>
                                     <MediaDataAttr>
                                         {type === "movie" ?
-                                        <>
-                                            {data.runtime.hours}h {data.runtime.minutes}m
-                                        </> :
-                                        <>  
-                                            {data.number_of_seasons} season with {data.number_of_episodes} episodes total                                  </>} 
+                                            `${data.runtime.hours}h ${data.runtime.minutes}m`
+                                            :
+                                            `${data.number_of_seasons} season with ${data.number_of_episodes} episodes total`
+                                        } 
                                     </MediaDataAttr>
                                     {data.video.lenght > 0 && 
-                                        <div>
-                                            <StyledButton target='_blank' href={`https://www.youtube.com/watch?v=${data.video[0].key}`}>
-                                                <span className="fas fa-play"></span>
-                                            </StyledButton>
-                                        </div>
+                                        <StyledButton target='_blank' href={`https://www.youtube.com/watch?v=${data.video[0].key}`}>
+                                            <span className="fas fa-play"></span>
+                                        </StyledButton>
                                     }
                                     <hr style={{background: 'transparent', width: '50%', height: '0.1px', margin:'5px 0', border: 0}}/>
                                     <div>
@@ -191,15 +214,7 @@ const Media = ({data}) => {
                                             <>
                                                 <hr style={{background: 'transparent', width: '50%', height: '0.1px', margin:'5px 0', border: 0}}/>
                                                 <div>
-                                                    {lists.length > 0 && !lists[0].list.find(t => t.id.toString() === data.id.toString()) ?
-                                                        <StyledButton onClick={() => addToList(lists[0], {id: data.id, name: type === "movie" ? data.title : data.name, type: type})} style={{borderRadius: '10px', height:'auto', width:'auto', padding: '5px 10px', background: "rgba(0,255,0,0.5)", fontWeight: 'bold', color: light  ? 'black' : 'white', margin: 0, cursor: "pointer"}}>
-                                                            Add to list
-                                                        </StyledButton>
-                                                        :
-                                                        <StyledButton onClick={() => removeFromList(lists[0], {id: data.id, name: type === "movie" ? data.title : data.name, type: type})} style={{borderRadius: '10px', height:'auto', width:'auto', padding: '5px 10px', background: "rgba(255,0,0,0.5)", fontWeight: 'bold', color: light  ? 'black' : 'white', margin: 0, cursor: "pointer"}}>
-                                                            Remove from list
-                                                        </StyledButton>
-                                                    }
+                                                    <AddToListButton data={data} type={type} light={light} />
                                                 </div>
                                             </>
                                     }

@@ -18,7 +18,7 @@ const Title = () => {
 
     useEffect(() => {
         setData(null)
-    },[history.location.pathname])
+    },[history])
 
     return(
         <>
