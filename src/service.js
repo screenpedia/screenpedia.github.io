@@ -1,12 +1,12 @@
 import firebase from 'firebase'
 
 var firebaseConfig = {
-    apiKey: "AIzaSyArf-MkYyUeuL8_hcovgjY7UVumVuuRCRA",
-    authDomain: "my-to-watch-list-mo.firebaseapp.com",
-    projectId: "my-to-watch-list-mo",
-    storageBucket: "my-to-watch-list-mo.appspot.com",
-    messagingSenderId: "59132483814",
-    appId: "1:59132483814:web:0603e396d094fe13720327"
+    apiKey: "AIzaSyDv06fQ3f97FuF2O6uy1i6riZhi0YUMCXQ",
+    authDomain: "screenpedia-mo.firebaseapp.com",
+    projectId: "screenpedia-mo",
+    storageBucket: "screenpedia-mo.appspot.com",
+    messagingSenderId: "858804864974",
+    appId: "1:858804864974:web:a9719c6ca1ee142a804d9f"
 };
 firebase.initializeApp(firebaseConfig);
 
