@@ -32,7 +32,7 @@ const StyledMenu = styled.div`
 `
 
 const StyledNavLink = styled(NavLink)`
-    margin: 2px 0;
+    margin: 2px auto;
     display: flex;
     border: none;
     width: auto;
@@ -127,16 +127,14 @@ const Icon = styled.i`
 
 const Menu = () => {
     const [open, setOpen] = useState(window.innerWidth > 991),
-        login = (setUser, notify) => {
+        login = (notify) => {
             Api.login().then(u => {
                 notify("Welcome " + u.displayName + "! ♥")
-                setUser(u)
             }).catch(console.error)
         },
-        logout = (setUser, notify, user) => {
+        logout = (notify, user) => {
             Api.logout().then(u => {
                 notify("Bay " + user.displayName + "! 😞")
-                setUser(u)
             }).catch(console.error)
         }
 
@@ -148,7 +146,7 @@ const Menu = () => {
 
     return(
         <Context.Consumer>
-            {({user, setUser, notify}) => (
+            {({user, notify}) => (
                 <>
                     <StyledMenuButton onClick={() => setOpen(!open)}>
                         <i className={`fas fa-${open ? 'times' : 'bars'}`}></i>
@@ -189,7 +187,7 @@ const Menu = () => {
                                 <span style={{padding:'0'}}>User</span>
                             </StyledNavLink>
                             {!user ? 
-                                <StyledNavLink as="button" onClick={() => login(setUser, notify, user)} open={open}>
+                                <StyledNavLink as="button" onClick={() => login(notify, user)} open={open}>
                                     <Icon className={`fas fa-sign-in-alt`}/>
                                     <span>Login</span>
                                 </StyledNavLink>
@@ -204,7 +202,7 @@ const Menu = () => {
                                             <Icon className={`fas fa-user`}/>
                                             <span>{user.displayName.split(" ")[0]}</span>
                                         </StyledNavLink>
-                                        <StyledNavLink as="button" div={+true} onClick={() => logout(setUser, notify, user)} open={open} style={{cursor:'pointer', marginLeft: "auto", marginRight: "auto"}}>
+                                        <StyledNavLink as="button" div={+true} onClick={() => logout(notify, user)} open={open} style={{cursor:'pointer'}}>
                                             <Icon className={`fas fa-sign-out-alt`}/>
                                             <span>Logout</span>
                                         </StyledNavLink>
@@ -212,7 +210,7 @@ const Menu = () => {
                             }
                         </div>
         
-                        <StyledNavLink hiddenCondition={'max-width: 991px'} as="button" open={open} onClick={() => setOpen(!open)} style={{marginLeft: "auto", marginRight: "auto"}}>
+                        <StyledNavLink hiddenCondition={'max-width: 991px'} as="button" open={open} onClick={() => setOpen(!open)}>
                             <Icon padding={'0 3px'} style={{transition: '0.2s all linear', transform: `rotate(${open ? '0' : "180deg"})`}} className={`fas fa-chevron-left`}/>
                             <span>Hide</span>
                         </StyledNavLink>

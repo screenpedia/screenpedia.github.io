@@ -27,15 +27,14 @@ const Api = {
         var movies,
             tv;
         return await this.get("movie/popular").then(m => {
-            m.results = m.results.map(d => ({...d, media_type:"movie"}))
-            movies = m;
+            movies = m.results.map(d => ({...d, media_type:"movie"}));
             return this.get("tv/popular")
         }).then(t => {
-            t.results = t.results.map(d => ({...d, media_type:"tv"}))
-            tv = t;
+            tv = t.results.map(d => ({...d, media_type:"tv"}));
             return {
-                page: movies.page,
-                results: [...movies.results, ...tv.results].sort((a,b) => b.popularity - a.popularity)
+                movies,
+                tv
+                // results: [...movies.results, ...tv.results].sort((a,b) => b.popularity - a.popularity)
             }
         })
     },
@@ -66,6 +65,10 @@ const Api = {
         else if(!id) throw new Error("ID needed")
         return await this.get(`${type}/${id}/videos`);
     },
+    getActorMedia: async function(id){
+        if(!id) throw new Error("ID needed")
+        return await this.get(`person/${id}/combined_credits`)
+    },
     getById: async function(type, id) {
         if(!id) throw new Error("ID needed")
         var data = null;
@@ -82,11 +85,11 @@ const Api = {
                 }
                 data = d;
                 if(type === 'movie') data.runtime=formatTime(data.runtime)
-                return this.getRecomendationsById(type, id)
+                return type !== "person" ? this.getRecomendationsById(type, id) : this.getActorMedia(id)
             })
             .then(r => {
-                data.recomendations = r.results;
-                return this.getVideosById(type, id)
+                data.recomendations = r.results || r.cast;
+                return type !== "person" ? this.getVideosById(type, id) : {}
             })
             .then(v => {
                 data.video = v.results
@@ -96,6 +99,7 @@ const Api = {
 
     // FIREBASE
     db: firebase.firestore(),
+    listsSnapshot: null,
     login: async function(lang = "en"){
         return await firebase.auth()
             .signInWithPopup(new firebase.auth.GoogleAuthProvider())
@@ -104,12 +108,13 @@ const Api = {
             });
     },
     logout: async function() {
+        this.listsSnapshot(); //unsubscribe
         return await firebase.auth().signOut();
     },
     getListsUser: async function(author, callback){
         if(!author) throw new Error("Author needed")
         const firestore = this.db;
-        return await firestore.collection("lists").where("author", "==", author).orderBy("name").onSnapshot(function(snapshot) {
+        return this.listsSnapshot = await firestore.collection("lists").where("author", "==", author).orderBy("name").onSnapshot(function(snapshot) {
             const docs =[]
             snapshot.forEach(doc => {
                 docs.push(({...doc.data(), id:doc.id}))

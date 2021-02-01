@@ -110,20 +110,20 @@ const CarrouselItemWrapper = styled.div`
 
 const CarrouselItem = ({data, lastChild, firstChild, rotate}) => {
     const [open, setOpen] = useState(false)
-    if(!data.media_type) data.media_type = data.title ? "movie" : "tv"
+    if(!data.media_type) data.media_type = data.title ? "movie" : data.birthday ? "person" : "tv"
     
     return (
         <CarrouselItemWrapper rotate={rotate} lastChild={lastChild} firstChild={firstChild}>
-            <CarrouselItemImg titleId={data.id} titleType={data.media_type} src={!!data.poster_path ? `https://image.tmdb.org/t/p/w220_and_h330_face${data.poster_path}` : 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAJFBMVEX4+vvb4OTx9PXl6ezf4+f19/nt8PLz9vfq7fDi5unc4eTs7/GWhAgrAAACGUlEQVR4nO3b23KqMBiAUQEtsn3/961OtydIJEUmaXCtS7n5v5FTEHc7AAAAAAAAAAAAAAAAAAAAAAAAzvr2PX3pgNf6oXnf8Icjjyv0XZxKh8R8rRTYNF+lU8IOqwU2zaF0TNBa++jFsXRM0H7Fwn3pmKAVA5umdEzQhxXuT/3h0B7/bbbwdrpfevopGRIVnq/dZOHT1WzZfUCpiJdu040uZovuVcskzIhNt2g/LVIw5zrcENuwmcLJHdeS3bREwKzrcJO1z+YKJ99h/IZ138bOtCUCZl2HSz8OL/fXkTVXgfnnxaaLnkt/FhDhxPzjJ7hNNzoQY4fhdYUUTMw+fYr7eEn3NPclYCgx+/QpwvPF9tHHNW4gMffwSR4HbK8fxtYWz4v4aWL26VM8F5z68/cXXTuNn1JMEosUzInVJAROEwvMP++dwEli9ulTvBU4Tsw8e5r3AkeJWSdPFaoZ+lNq4HNixrnTBQK73eSC+OpZ7+H+aC7X0L8SDhwlvn6Y3VVW2P3f0KYG1lbY3ba0iYGVFXYPm9q0wLoKu6dtbVJgVYXdaGOb9ItZRYXjwPMyMeUnwXoKp4FpqilcGlhN4eRhW7JaChd/hQpLU5hAYWEfVDgsfrl0qKRwDaVjghTWX7j9dxO3/37pmrtp6ZSIzb/nvdtNnm8v9Gff1f+A/1tcbPw/MwAAAAAAAAAAAAAAAAAAAAAAALl8A7+jEA62Pbx2AAAAAElFTkSuQmCC'} alt=""/>
+            <CarrouselItemImg titleId={data.id} titleType={data.media_type} src={!!data.profile_path ? `https://image.tmdb.org/t/p/w220_and_h330_face${data.profile_path}` : !!data.poster_path ? `https://image.tmdb.org/t/p/w220_and_h330_face${data.poster_path}` : 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAJFBMVEX4+vvb4OTx9PXl6ezf4+f19/nt8PLz9vfq7fDi5unc4eTs7/GWhAgrAAACGUlEQVR4nO3b23KqMBiAUQEtsn3/961OtydIJEUmaXCtS7n5v5FTEHc7AAAAAAAAAAAAAAAAAAAAAAAAzvr2PX3pgNf6oXnf8Icjjyv0XZxKh8R8rRTYNF+lU8IOqwU2zaF0TNBa++jFsXRM0H7Fwn3pmKAVA5umdEzQhxXuT/3h0B7/bbbwdrpfevopGRIVnq/dZOHT1WzZfUCpiJdu040uZovuVcskzIhNt2g/LVIw5zrcENuwmcLJHdeS3bREwKzrcJO1z+YKJ99h/IZ138bOtCUCZl2HSz8OL/fXkTVXgfnnxaaLnkt/FhDhxPzjJ7hNNzoQY4fhdYUUTMw+fYr7eEn3NPclYCgx+/QpwvPF9tHHNW4gMffwSR4HbK8fxtYWz4v4aWL26VM8F5z68/cXXTuNn1JMEosUzInVJAROEwvMP++dwEli9ulTvBU4Tsw8e5r3AkeJWSdPFaoZ+lNq4HNixrnTBQK73eSC+OpZ7+H+aC7X0L8SDhwlvn6Y3VVW2P3f0KYG1lbY3ba0iYGVFXYPm9q0wLoKu6dtbVJgVYXdaGOb9ItZRYXjwPMyMeUnwXoKp4FpqilcGlhN4eRhW7JaChd/hQpLU5hAYWEfVDgsfrl0qKRwDaVjghTWX7j9dxO3/37pmrtp6ZSIzb/nvdtNnm8v9Gff1f+A/1tcbPw/MwAAAAAAAAAAAAAAAAAAAAAAALl8A7+jEA62Pbx2AAAAAElFTkSuQmCC'} alt=""/>
             <CarrouselItemData open={open} id={data.id}>
-                <CarrouselItemPercentaje number={data.vote_average ? data.vote_average * 10 : 0}/>
+                <CarrouselItemPercentaje number={data.vote_average ? data.vote_average * 10 : data.media_type === "person" && data.popularity ? Math.round(data.popularity * 10) : 0}/>
                 <CarrouselItemTitle>
                     {data.media_type === "movie" ? data.title : data.name}
                 </CarrouselItemTitle>
                 <CarrouselItemOverview open={open}>
-                    {data.overview}
+                    {data.overview ? data.overview : data.biography ? data.biography : ''}
                 </CarrouselItemOverview>
-                {data.overview && 
+                {(data.overview || data.biography) && 
                     <CarrouselItemOverviewExpandButton onClick={() => setOpen(!open)}>
                         {open ? 'Hide overview' : 'Show overview'}
                     </CarrouselItemOverviewExpandButton>

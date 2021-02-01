@@ -5,30 +5,34 @@ import Carrousel from '../Styled/Carrousel/Carrousel'
 import CarrouselItem from '../Styled/Carrousel/CarrouselItem'
 import Section from '../Styled/Section/Section'
 import SectionTitle from '../Styled/Section/SectionTitle'
-import SearchBar from '../Components/SearchBar'
 
 const Home = () => {
-    const [popular, setPopular] = useState([]),
+    const [popular, setPopular] = useState(null),
     [trending, setTrending] = useState([])
 
     useEffect(() => {
-        api.popular().then(res => res.results).then(setPopular)
+        api.popular().then(setPopular)
         api.trending().then(res => res.results).then(setTrending)
     }, [])
 
     return (
         <div>
-            <SearchBar />
-            <Section>
-                <SectionTitle>Popular</SectionTitle>
-                <Carrousel rotate={+true}>
-                    {popular.map((data, index) => <CarrouselItem rotate={+true} key={index} data={data} firstChild={index === 0} lastChild={index === popular.length-1}/>)}
-                </Carrousel>
-            </Section>
             <Section>
                 <SectionTitle>Trending</SectionTitle>
                 <Carrousel rotate={+true}>
                     {trending.map((data, index) => <CarrouselItem rotate={+true} key={index} data={data} firstChild={index === 0} lastChild={index === trending.length-1}/>)}
+                </Carrousel>
+            </Section>
+            <Section>
+                <SectionTitle>Popular movies</SectionTitle>
+                <Carrousel rotate={+true}>
+                    {!!popular && popular.movies.map((data, index) => <CarrouselItem rotate={+true} key={index} data={data} firstChild={index === 0} lastChild={index === popular.length-1}/>)}
+                </Carrousel>
+            </Section>
+            <Section>
+                <SectionTitle>Popular series</SectionTitle>
+                <Carrousel rotate={+true}>
+                    {!!popular && popular.tv.map((data, index) => <CarrouselItem rotate={+true} key={index} data={data} firstChild={index === 0} lastChild={index === popular.length-1}/>)}
                 </Carrousel>
             </Section>
         </div>

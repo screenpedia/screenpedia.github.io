@@ -29,7 +29,6 @@ const App = () => {
     notify = (text, error = false) => error ? toast.warning(text) : toast.success(text),
     context = {
       user,
-      setUser,
       theme,
       setTheme,
       lists,
