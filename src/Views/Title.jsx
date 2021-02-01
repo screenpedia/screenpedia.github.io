@@ -62,6 +62,8 @@ const MediaData = styled.div`
 const MediaDataAttr = styled.div`
     width: auto;
     display: flex;
+    flex-wrap: wrap;
+    margin-top: 10px;
 `
 
 const Genre = styled(Link)`
@@ -69,27 +71,32 @@ const Genre = styled(Link)`
     border-radius: 10px;
     text-decoration: none;
     transition: 0.5s all;
+    white-space: nowrap;
     &:hover{
         opacity: 0.5;
     }
 `
 
 const StyledButton = styled.a`
-    border-radius: 50%;
-    background: white;
-    margin: 4px;
-    height: 42px;
-    width: 42px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     align-content: center;
     text-decoration: none;
-    color: black;
     transition: 0.5s all;
+    background: ${({light}) => light ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)"};
+    border-radius: 10px;
+    height:auto;
+    width:auto;
+    padding: 5px 10px;
+    font-weight: bold;
+    color: ${({light}) => light  ? 'black' : 'white'};
+    margin: 0;
+    cursor: pointer;
     &:hover{
         opacity: 0.8;
         transform: scale(0.95);
+        background: ${({backgroundHover}) => backgroundHover};
     }
 }
 `
@@ -130,15 +137,15 @@ const AddToListButton = ({data, type, light}) => {
                 return <>
                     {lists.length === 1 ?
                         !lists[0].list.find(t => t.id.toString() === data.id.toString()) ?
-                            <StyledButton onClick={() => addToList(lists[0], {id: data.id, name: type === "movie" ? data.title : data.name, type: type}, notify)} style={{borderRadius: '10px', height:'auto', width:'auto', padding: '5px 10px', background: "rgba(0,255,0,0.5)", fontWeight: 'bold', color: light  ? 'black' : 'white', margin: 0, cursor: "pointer"}}>
+                            <StyledButton backgroundHover={"rgba(0,255,0,0.5)"} onClick={() => addToList(lists[0], {id: data.id, name: type === "movie" ? data.title : data.name, type: type}, notify)} light={light}>
                                 Add to list
                             </StyledButton>
                             :
-                            <StyledButton onClick={() => removeFromList(lists[0], {id: data.id, name: type === "movie" ? data.title : data.name, type: type}, notify)} style={{borderRadius: '10px', height:'auto', width:'auto', padding: '5px 10px', background: "rgba(255,0,0,0.5)", fontWeight: 'bold', color: light  ? 'black' : 'white', margin: 0, cursor: "pointer"}}>
+                            <StyledButton backgroundHover={"rgba(255,0,0,0.5)"} onClick={() => removeFromList(lists[0], {id: data.id, name: type === "movie" ? data.title : data.name, type: type}, notify)} light={light}>
                                 Remove from list
                             </StyledButton>
                         :
-                            <StyledButton onClick={() => removeFromList(lists[0], {id: data.id, name: type === "movie" ? data.title : data.name, type: type}, notify)} style={{borderRadius: '10px', height:'auto', width:'auto', padding: '5px 10px', background: "rgba(255,0,0,0.5)", fontWeight: 'bold', color: light  ? 'black' : 'white', margin: 0, cursor: "pointer"}}>
+                            <StyledButton onClick={() => removeFromList(lists[0], {id: data.id, name: type === "movie" ? data.title : data.name, type: type}, notify)} light={light}>
                                 Edit lists
                             </StyledButton>
                     }
@@ -157,6 +164,8 @@ const Media = () => {
         [g, setG] = useState(229),
         [b, setB] = useState(229),
         light = tinycolor(`rgb (${r},${g},${b})`).isLight()
+
+    console.log(data)
 
     useEffect(() => {
         setLoad(false)
@@ -225,13 +234,19 @@ const Media = () => {
                                         `${data.number_of_seasons} season with ${data.number_of_episodes} episodes total`
                                     } 
                                 </MediaDataAttr>
-                                <div style={{marginTop: '10px'}}>
+                                <MediaDataAttr>
                                     <b>Overview</b>
                                     <p>{data.overview}</p>
-                                </div>
-                                <div style={{marginTop: '10px'}}>
+                                </MediaDataAttr>
+                                <MediaDataAttr>
+                                    {
+                                        data.homepage &&
+                                            <StyledButton as="a" target="_blank" href={`${data.homepage}`} light={light} style={{marginRight: '5px'}}>
+                                                Homepage
+                                            </StyledButton>
+                                    }
                                     <AddToListButton data={data} type={type} light={light} />
-                                </div>
+                                </MediaDataAttr>
                             </MediaData>
                         </Banner>
                         {data.recomendations && data.recomendations.length > 0 && 

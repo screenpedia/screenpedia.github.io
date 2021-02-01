@@ -57,6 +57,11 @@ const Api = {
                 return this.get(`discover/${type}`,`with_genres=${id}&page=${page}`)
             }).then(genre => ({name: genreName, ...genre}));
     },
+    getWatchProvidersById: async function(type, id) {
+        if(!type) throw new Error("Type needed")
+        else if(!id) throw new Error("ID needed")
+        return await this.get(`${type}/${id}/watch/providers`)
+    },
     getRecomendationsById: async function(type, id) {
         if(!type) throw new Error("Type needed")
         else if(!id) throw new Error("ID needed")
@@ -66,10 +71,6 @@ const Api = {
         if(!type) throw new Error("Type needed")
         else if(!id) throw new Error("ID needed")
         return await this.get(`${type}/${id}/videos`);
-    },
-    getActorMedia: async function(id){
-        if(!id) throw new Error("ID needed")
-        return await this.get(`person/${id}/combined_credits`)
     },
     getById: async function(type, id) {
         if(!id) throw new Error("ID needed")
@@ -95,8 +96,16 @@ const Api = {
             })
             .then(v => {
                 data.video = v.results
+                return this.getWatchProvidersById(type, id)
+            })
+            .then(w =>{
+                data.watch_providers = w.results;
                 return data
             })
+    },
+    getActorMedia: async function(id){
+        if(!id) throw new Error("ID needed")
+        return await this.get(`person/${id}/combined_credits`)
     },
 
     // FIREBASE

@@ -44,7 +44,7 @@ const Search = () => {
         <StyledSection background={"linear-gradient(90deg,#4a00e0,#8e2de2)"}>
             <h2 style={{marginBottom: '15px', color: 'white', textAlign: 'center', filter: "drop-shadow(0px 5px 5px rgba(0,0,0,0.25))"}}>Search any movie or serie</h2>
             <form onSubmit={(e) => {e.preventDefault(); history.push(`/search/?name=${search}`)}} style={{display: 'flex', flexDirection: 'row', filter: "drop-shadow(0px 5px 5px rgba(0,0,0,0.25))"}}>
-                <InputSearch value={search} placeholder="Movie or serie name" onInput={(e) => setSearch(e.currentTarget.value)} onKeyPress={(e) => e.code === "Enter" ? history.push(`/search/?name=${search}`) : null} />
+                <InputSearch value={search} placeholder="Movie, serie or person name" onInput={(e) => setSearch(e.currentTarget.value)} onKeyPress={(e) => e.code === "Enter" ? history.push(`/search/?name=${search}`) : null} />
                 <ButtonSearch type="submit">
                     <i className="fas fa-search"></i>
                 </ButtonSearch>
