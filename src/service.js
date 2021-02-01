@@ -73,11 +73,10 @@ const Api = {
             .then(d => {
                 if(!d.success && d.status_message) throw new Error(d.status_message)
                 const formatTime = (initial) => {
-                    var hours = (initial / 60),
-                        rhours = Math.floor(hours),
-                        minutes = Math.round(hours - rhours) * 60;
+                    var hours = Math.floor(initial / 60),
+                        minutes = initial % 60;
                     return {
-                        hours: rhours,
+                        hours,
                         minutes
                     };
                 }

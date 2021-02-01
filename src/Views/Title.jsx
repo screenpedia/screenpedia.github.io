@@ -4,12 +4,13 @@ import { useEffect, useState } from "react"
 import ColorThief from 'colorthief'
 import tinycolor from 'tinycolor2'
 
-import SectionTitle from '../../Styled/Section/SectionTitle'
-import Carrousel from '../../Styled/Carrousel/Carrousel'
-import CarrouselItem from '../../Styled/Carrousel/CarrouselItem'
-import Loading from '../../Components/Loading'
-import Context from "../../context"
-import Api from "../../service"
+import ErrorComponent from '../Components/Error'
+import SectionTitle from '../Styled/Section/SectionTitle'
+import Carrousel from '../Styled/Carrousel/Carrousel'
+import CarrouselItem from '../Styled/Carrousel/CarrouselItem'
+import Loading from '../Components/Loading'
+import Context from "../context"
+import Api from "../service"
 
 const Banner = styled.div`
     background: radial-gradient(rgba(${({r,g,b})=>`${r},${g},${b}`},.75),rgba(${({r,g,b})=>`${r},${g},${b}`},.75)), url(${({backdropSrc}) => backdropSrc ? 'https://image.tmdb.org/t/p/w1280'+backdropSrc : ''});
@@ -116,21 +117,26 @@ const AddToListButton = ({data, type, light}) => {
             .then(notify("Successfully removed"))
             .catch(err => {
                 console.error(err)
-                notify("Ups somthing wents wrong", true)
+                notify("Ups something wents wrong", true)
             })
     }
     return (
         <Context.Consumer>
             {({lists, notify}) => (
                 <>
-                    {!lists[0].list.find(t => t.id.toString() === data.id.toString()) ?
-                        <StyledButton onClick={() => addToList(lists[0], {id: data.id, name: type === "movie" ? data.title : data.name, type: type}, notify)} style={{borderRadius: '10px', height:'auto', width:'auto', padding: '5px 10px', background: "rgba(0,255,0,0.5)", fontWeight: 'bold', color: light  ? 'black' : 'white', margin: 0, cursor: "pointer"}}>
-                            Add to list
-                        </StyledButton>
+                    {lists.length === 1 ?
+                        !lists[0].list.find(t => t.id.toString() === data.id.toString()) ?
+                            <StyledButton onClick={() => addToList(lists[0], {id: data.id, name: type === "movie" ? data.title : data.name, type: type}, notify)} style={{borderRadius: '10px', height:'auto', width:'auto', padding: '5px 10px', background: "rgba(0,255,0,0.5)", fontWeight: 'bold', color: light  ? 'black' : 'white', margin: 0, cursor: "pointer"}}>
+                                Add to list
+                            </StyledButton>
+                            :
+                            <StyledButton onClick={() => removeFromList(lists[0], {id: data.id, name: type === "movie" ? data.title : data.name, type: type}, notify)} style={{borderRadius: '10px', height:'auto', width:'auto', padding: '5px 10px', background: "rgba(255,0,0,0.5)", fontWeight: 'bold', color: light  ? 'black' : 'white', margin: 0, cursor: "pointer"}}>
+                                Remove from list
+                            </StyledButton>
                         :
-                        <StyledButton onClick={() => removeFromList(lists[0], {id: data.id, name: type === "movie" ? data.title : data.name, type: type}, notify)} style={{borderRadius: '10px', height:'auto', width:'auto', padding: '5px 10px', background: "rgba(255,0,0,0.5)", fontWeight: 'bold', color: light  ? 'black' : 'white', margin: 0, cursor: "pointer"}}>
-                            Remove from list
-                        </StyledButton>
+                            <StyledButton onClick={() => removeFromList(lists[0], {id: data.id, name: type === "movie" ? data.title : data.name, type: type}, notify)} style={{borderRadius: '10px', height:'auto', width:'auto', padding: '5px 10px', background: "rgba(255,0,0,0.5)", fontWeight: 'bold', color: light  ? 'black' : 'white', margin: 0, cursor: "pointer"}}>
+                                Edit lists
+                            </StyledButton>
                     }
                 </>
             )}
@@ -138,34 +144,45 @@ const AddToListButton = ({data, type, light}) => {
     )
 }
 
-const Media = ({data}) => {
-    const [load, setLoad] = useState(false),
+const Media = () => {
+    const { type, id } = useParams(),
+        [error, setError] = useState(null),
+        [data, setData] = useState(null),
+        [load, setLoad] = useState(false),
         [r, setR] = useState(255),
         [g, setG] = useState(255),
         [b, setB] = useState(255),
-        light = tinycolor(`rgb (${r},${g},${b})`).isLight(),
-        {type} = useParams()
+        light = tinycolor(`rgb (${r},${g},${b})`).isLight()
+
+    useEffect(() => {
+        setLoad(false)
+        setError(null)
+        setData(null)
+        Api.getById(type, id).then(setData).catch(({message}) => setError(message))
+    },[id, type])
 
     useEffect(()=>{
-        const img = new Image(),
-            colorThief = new ColorThief();
-        img.setAttribute('crossOrigin', 'Anonymous')
-        img.addEventListener("load", function(){
-            img.removeEventListener("load", this)
-            const color = colorThief.getColor(img)
-            setR(color[0])
-            setG(color[1])
-            setB(color[2])
-            setLoad(true)
-            return
-        })
-        img.src = `https://images1-focus-opensocial.googleusercontent.com/gadgets/proxy?container=focus&refresh=2592000&url=https://image.tmdb.org/t/p/w300_and_h450_bestv2/${data.backdrop_path ? data.backdrop_path : data.poster_path}`
+        if(data){
+            const img = new Image(),
+                colorThief = new ColorThief();
+            img.setAttribute('crossOrigin', 'Anonymous')
+            img.addEventListener("load", function(){
+                img.removeEventListener("load", this)
+                const color = colorThief.getColor(img)
+                setR(color[0])
+                setG(color[1])
+                setB(color[2])
+                setLoad(true)
+            })
+            img.src = `https://images1-focus-opensocial.googleusercontent.com/gadgets/proxy?container=focus&refresh=2592000&url=https://image.tmdb.org/t/p/w300_and_h450_bestv2/${data.backdrop_path ? data.backdrop_path : data.poster_path}`
+        }
     }, [data])
     
     return(
         <Context.Consumer>
             {({user, lists}) => {
-                if(!load) return <Loading/>
+                if(!load && !error) return <Loading/>
+                else if(error) return <ErrorComponent error={error} />
                 return <>
                     <Banner light={light} backdropSrc={data.backdrop_path} r={r} g={g} b={b}>
                         <MediaPoster src={!!data.poster_path ? `https://image.tmdb.org/t/p/w300_and_h450_bestv2/${data.poster_path}` : 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAJFBMVEX4+vvb4OTx9PXl6ezf4+f19/nt8PLz9vfq7fDi5unc4eTs7/GWhAgrAAACGUlEQVR4nO3b23KqMBiAUQEtsn3/961OtydIJEUmaXCtS7n5v5FTEHc7AAAAAAAAAAAAAAAAAAAAAAAAzvr2PX3pgNf6oXnf8Icjjyv0XZxKh8R8rRTYNF+lU8IOqwU2zaF0TNBa++jFsXRM0H7Fwn3pmKAVA5umdEzQhxXuT/3h0B7/bbbwdrpfevopGRIVnq/dZOHT1WzZfUCpiJdu040uZovuVcskzIhNt2g/LVIw5zrcENuwmcLJHdeS3bREwKzrcJO1z+YKJ99h/IZ138bOtCUCZl2HSz8OL/fXkTVXgfnnxaaLnkt/FhDhxPzjJ7hNNzoQY4fhdYUUTMw+fYr7eEn3NPclYCgx+/QpwvPF9tHHNW4gMffwSR4HbK8fxtYWz4v4aWL26VM8F5z68/cXXTuNn1JMEosUzInVJAROEwvMP++dwEli9ulTvBU4Tsw8e5r3AkeJWSdPFaoZ+lNq4HNixrnTBQK73eSC+OpZ7+H+aC7X0L8SDhwlvn6Y3VVW2P3f0KYG1lbY3ba0iYGVFXYPm9q0wLoKu6dtbVJgVYXdaGOb9ItZRYXjwPMyMeUnwXoKp4FpqilcGlhN4eRhW7JaChd/hQpLU5hAYWEfVDgsfrl0qKRwDaVjghTWX7j9dxO3/37pmrtp6ZSIzb/nvdtNnm8v9Gff1f+A/1tcbPw/MwAAAAAAAAAAAAAAAAAAAAAAALl8A7+jEA62Pbx2AAAAAElFTkSuQmCC'} />

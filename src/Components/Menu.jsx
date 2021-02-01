@@ -15,6 +15,8 @@ const StyledMenu = styled.div`
     display: flex;
     flex-shrink: 0;
     flex-direction: column;
+    justify-content: space-between;
+    text-align: center;
     z-index: 3;
     transition: all 0.2s ease;
     overflow-y: auto;
@@ -25,6 +27,7 @@ const StyledMenu = styled.div`
         position: fixed;
         padding: ${({open}) => open ? '10px' : '10px 0px'};
         align-items: center;
+        justify-content: start;
     }
 `
 
@@ -157,57 +160,59 @@ const Menu = () => {
                                 <div style={{display: 'flex', transition: 'all 0.2s ease', maxWidth: open ? '100vh' : '0', overflow: "hidden"}}>ovies</div>
                             </h1>
                         </Link>
-                        <StyledNavLink replace onClick={() => window.innerWidth < 991 && setOpen(false)} open={open} exact to="/">
-                            <Icon className={`fas fa-home`}/>
-                            <span>Home</span>
-                        </StyledNavLink>
-                        <StyledNavLink replace onClick={() => window.innerWidth < 991 && setOpen(false)} open={open} to="/search">
-                            <Icon className={`fas fa-search`}/>
-                            <span>Search</span>
-                        </StyledNavLink>
-        
-                        <hr style={{width: "50%"}}/>
-                        <StyledNavLink div={+true} as="div" open={open} >
-                            <span style={{padding:'0'}}>Genres</span>
-                        </StyledNavLink>
-                        <StyledNavLink replace onClick={() => window.innerWidth < 991 && setOpen(false)} open={open} to="/genre/movie">
-                            <Icon className={`fas fa-film`}/>
-                            <span>Movie</span>
-                        </StyledNavLink>
-                        <StyledNavLink replace onClick={() => window.innerWidth < 991 && setOpen(false)} open={open} to="/genre/tv">
-                            <Icon className={`fas fa-tv`}/>
-                            <span>Tv</span>
-                        </StyledNavLink>
                         
-                        <hr style={{width: "50%"}}/>
-                        <StyledNavLink div={+true} as="div" open={open} >
-                            <span style={{padding:'0'}}>User</span>
-                        </StyledNavLink>
-                        {!user ? 
-                            <StyledNavLink as="button" onClick={() => login(setUser, notify, user)} open={open}>
-                                <Icon className={`fas fa-sign-in-alt`}/>
-                                <span>Login</span>
+                        <div>
+                            <StyledNavLink replace onClick={() => window.innerWidth < 991 && setOpen(false)} open={open} exact to="/">
+                                <Icon className={`fas fa-home`}/>
+                                <span>Home</span>
                             </StyledNavLink>
-                            :
-                            user.loading ? 
-                                <StyledNavLink as="div" div={+true}>
-                                    <img alt="Loading spinner" src={process.env.PUBLIC_URL + "/media/spinner.gif"} style={{display: "block", margin: 'auto'}} height="40" width="40" />
+                            <StyledNavLink replace onClick={() => window.innerWidth < 991 && setOpen(false)} open={open} to="/search">
+                                <Icon className={`fas fa-search`}/>
+                                <span>Search</span>
+                            </StyledNavLink>
+            
+                            <hr style={{width: "50%"}}/>
+                            <StyledNavLink div={+true} as="div" open={open} >
+                                <span style={{padding:'0'}}>Genres</span>
+                            </StyledNavLink>
+                            <StyledNavLink replace onClick={() => window.innerWidth < 991 && setOpen(false)} open={open} to="/genre/movie">
+                                <Icon className={`fas fa-film`}/>
+                                <span>Movie</span>
+                            </StyledNavLink>
+                            <StyledNavLink replace onClick={() => window.innerWidth < 991 && setOpen(false)} open={open} to="/genre/tv">
+                                <Icon className={`fas fa-tv`}/>
+                                <span>Tv</span>
+                            </StyledNavLink>
+                            
+                            <hr style={{width: "50%"}}/>
+                            <StyledNavLink div={+true} as="div" open={open} >
+                                <span style={{padding:'0'}}>User</span>
+                            </StyledNavLink>
+                            {!user ? 
+                                <StyledNavLink as="button" onClick={() => login(setUser, notify, user)} open={open}>
+                                    <Icon className={`fas fa-sign-in-alt`}/>
+                                    <span>Login</span>
                                 </StyledNavLink>
                                 :
-                                <>
-                                    <StyledNavLink replace onClick={() => window.innerWidth < 991 && setOpen(false)} open={open} to="/user">
-                                        <Icon className={`fas fa-user`}/>
-                                        <span>{user.displayName.split(" ")[0]}</span>
+                                user.loading ? 
+                                    <StyledNavLink as="div" div={+true}>
+                                        <img alt="Loading spinner" src={process.env.PUBLIC_URL + "/media/spinner.gif"} style={{display: "block", margin: 'auto'}} height="40" width="40" />
                                     </StyledNavLink>
-                                    <StyledNavLink as="button" div={+true} onClick={() => logout(setUser, notify, user)} open={open} style={{cursor:'pointer'}}>
-                                        <Icon className={`fas fa-sign-out-alt`}/>
-                                        <span>Logout</span>
-                                    </StyledNavLink>
-                                </>
-                        }
+                                    :
+                                    <>
+                                        <StyledNavLink replace onClick={() => window.innerWidth < 991 && setOpen(false)} open={open} to="/user">
+                                            <Icon className={`fas fa-user`}/>
+                                            <span>{user.displayName.split(" ")[0]}</span>
+                                        </StyledNavLink>
+                                        <StyledNavLink as="button" div={+true} onClick={() => logout(setUser, notify, user)} open={open} style={{cursor:'pointer', marginLeft: "auto", marginRight: "auto"}}>
+                                            <Icon className={`fas fa-sign-out-alt`}/>
+                                            <span>Logout</span>
+                                        </StyledNavLink>
+                                    </>
+                            }
+                        </div>
         
-                        <hr style={{width: "50%", border: window.innerWidth > 991 ? '' : 'none'}}/>
-                        <StyledNavLink hiddenCondition={'max-width: 991px'} as="button" open={open} onClick={() => setOpen(!open)}>
+                        <StyledNavLink hiddenCondition={'max-width: 991px'} as="button" open={open} onClick={() => setOpen(!open)} style={{marginLeft: "auto", marginRight: "auto"}}>
                             <Icon padding={'0 3px'} style={{transition: '0.2s all linear', transform: `rotate(${open ? '0' : "180deg"})`}} className={`fas fa-chevron-left`}/>
                             <span>Hide</span>
                         </StyledNavLink>
