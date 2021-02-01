@@ -24,6 +24,10 @@ const Home = () => {
     })
     return (
         <div>
+            {/* <HomeBanner>
+                <h2>Screenpedia</h2>
+                <p></p>
+            </HomeBanner> */}
             <Section>
                 <SectionTitle>Trending</SectionTitle>
                 <Carrousel rotate={+true}>

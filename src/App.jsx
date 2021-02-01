@@ -3,12 +3,13 @@ import { HashRouter } from 'react-router-dom'
 import { useEffect, useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import firebase from 'firebase/app'
+import 'firebase/auth'
 
 import Menu from './Components/Menu';
 import MainRouter from './Views';
 
 import Context from './context'
-import firebase from 'firebase'
 import Api from './service';
 
 const themes = {
@@ -54,7 +55,7 @@ const App = () => {
             <MainRouter user={user} />
           </div>
           <ToastContainer
-            position={window.innerWidth > 991 ? "top-center" : "top-bottom"}
+            position={window.innerWidth > 991 ? "top-center" : "bottom-center"}
             autoClose={2000}
             hideProgressBar={false}
             newestOnTop={true}

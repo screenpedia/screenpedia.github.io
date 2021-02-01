@@ -194,10 +194,7 @@ List = ({unique, data, userId, notify}) => {
     )
 },  
 User = () => {
-    const [name, setName] = useState("")
-
     useEffect(() => {
-        document.title = `Screenpedia | ${name} lists`
         return () => {
             document.title = "Screenpedia"
         }
@@ -206,7 +203,7 @@ User = () => {
     return (
         <Context.Consumer>
             {({user, lists, notify}) => {
-                setName(user.displayName.split(" ")[0])
+                document.title = `Screenpedia | ${user.displayName.split(" ")[0]} lists`
                 return (
                     <UserWrapper>
                         <h2 style={{maxWidth: "calc(100% - 40px)"}}>{user.displayName}</h2>
