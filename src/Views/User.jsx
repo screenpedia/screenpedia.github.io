@@ -1,7 +1,7 @@
 import api from '../service'
 import Context from '../context'
 import styled from 'styled-components'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 const UserWrapper = styled.div`
@@ -194,18 +194,30 @@ List = ({unique, data, userId, notify}) => {
     )
 },  
 User = () => {
+    const [name, setName] = useState("")
+
+    useEffect(() => {
+        document.title = `Screenpedia | ${name} lists`
+        return () => {
+            document.title = "Screenpedia"
+        }
+    })
+
     return (
         <Context.Consumer>
-            {({user, lists, notify}) => (
-                <UserWrapper>
-                    <h2 style={{maxWidth: "calc(100% - 40px)"}}>{user.displayName}</h2>
-                    <StyledLists>
-                        {lists.map(list => (
-                            <List notify={notify} unique={lists.length === 1} key={list.id} data={list} userId={user.uid} />
-                        ))}
-                    </StyledLists>
-                </UserWrapper>
-            )}
+            {({user, lists, notify}) => {
+                setName(user.displayName.split(" ")[0])
+                return (
+                    <UserWrapper>
+                        <h2 style={{maxWidth: "calc(100% - 40px)"}}>{user.displayName}</h2>
+                        <StyledLists>
+                            {lists.map(list => (
+                                <List notify={notify} unique={lists.length === 1} key={list.id} data={list} userId={user.uid} />
+                            ))}
+                        </StyledLists>
+                    </UserWrapper>
+                )
+            }}
         </Context.Consumer>
     )
 }
