@@ -49,6 +49,7 @@ const MediaPoster = styled.img`
 `
 
 const MediaData = styled.div`
+    margin: 5px 0;
     display: flex;
     width: 100%;
     flex-direction: column;
@@ -152,9 +153,9 @@ const Media = () => {
         [error, setError] = useState(null),
         [data, setData] = useState(null),
         [load, setLoad] = useState(false),
-        [r, setR] = useState(255),
-        [g, setG] = useState(255),
-        [b, setB] = useState(255),
+        [r, setR] = useState(229),
+        [g, setG] = useState(229),
+        [b, setB] = useState(229),
         light = tinycolor(`rgb (${r},${g},${b})`).isLight()
 
     useEffect(() => {
@@ -166,21 +167,35 @@ const Media = () => {
 
     useEffect(()=>{
         if(data){
-            const img = new Image(),
-                colorThief = new ColorThief();
-            img.setAttribute('crossOrigin', 'Anonymous')
-            img.addEventListener("load", function(){
-                img.removeEventListener("load", this)
-                const color = colorThief.getColor(img)
-                setR(color[0])
-                setG(color[1])
-                setB(color[2])
+            if(data.poster_path || data.backdrop_path){
+                const img = new Image(),
+                    colorThief = new ColorThief();
+                img.setAttribute('crossOrigin', 'Anonymous')
+                img.addEventListener("load", function(){
+                    img.removeEventListener("load", this)
+                    const color = colorThief.getColor(img)
+                    setR(color[0])
+                    setG(color[1])
+                    setB(color[2])
+                    setLoad(true)
+                })
+                img.src = `https://images1-focus-opensocial.googleusercontent.com/gadgets/proxy?container=focus&refresh=2592000&url=https://image.tmdb.org/t/p/w300_and_h450_bestv2/${data.backdrop_path ? data.backdrop_path : data.poster_path}`
+            }else{
                 setLoad(true)
-            })
-            img.src = `https://images1-focus-opensocial.googleusercontent.com/gadgets/proxy?container=focus&refresh=2592000&url=https://image.tmdb.org/t/p/w300_and_h450_bestv2/${data.backdrop_path ? data.backdrop_path : data.poster_path}`
+            }
+            
         }
     }, [data])
-    
+
+    useEffect(() => {
+        if(data){
+            document.title = "Screenpedia | " + (type === "movie" ? data.title : data.name)
+            return () => {
+                document.title = "Screenpedia"
+            }
+        }
+    })
+
     return(
         <>
             {!load && !error ? <Loading/> :
@@ -219,12 +234,14 @@ const Media = () => {
                                 </div>
                             </MediaData>
                         </Banner>
-                        <div style={{padding: '10px'}}>
-                            <SectionTitle>Recomendations</SectionTitle>
-                            <Carrousel>
-                                {data.recomendations.map((d, i) => <CarrouselItem key={i} data={d} firstChild={i === 0} lastChild={i === data.recomendations.length-1}/>)}
-                            </Carrousel>
-                        </div>
+                        {data.recomendations && data.recomendations.length > 0 && 
+                            <div style={{padding: '10px'}}>
+                                <SectionTitle>Recomendations</SectionTitle>
+                                <Carrousel>
+                                    {data.recomendations.map((d, i) => <CarrouselItem key={i} data={d} firstChild={i === 0} lastChild={i === data.recomendations.length-1}/>)}
+                                </Carrousel>
+                            </div>
+                        }
                     </>
             }
         </>

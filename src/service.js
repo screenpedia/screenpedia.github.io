@@ -121,7 +121,7 @@ const Api = {
             })
             if(docs.length === 0){
                 firestore.collection("lists").add({
-                    name: "Your list",
+                    name: "My to watch list",
                     author,
                     list: []
                 })

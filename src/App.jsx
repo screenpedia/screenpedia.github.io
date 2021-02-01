@@ -35,13 +35,14 @@ const App = () => {
       notify
     }
 
-  firebase.auth().onAuthStateChanged(setUser)
+  firebase.auth().onAuthStateChanged(u => {
+    setUser(u)
+  })
 
   useEffect(() => {
     if(user && !user.loading){
       Api.getListsUser(user.uid, setLists).catch(console.error)
     }
-    return
   }, [user])
 
   return (
@@ -53,10 +54,10 @@ const App = () => {
             <MainRouter user={user} />
           </div>
           <ToastContainer
-            position="top-center"
-            autoClose={2500}
+            position={window.innerWidth > 991 ? "top-center" : "top-bottom"}
+            autoClose={2000}
             hideProgressBar={false}
-            newestOnTop={false}
+            newestOnTop={true}
             closeOnClick
             rtl={false}
             pauseOnFocusLoss

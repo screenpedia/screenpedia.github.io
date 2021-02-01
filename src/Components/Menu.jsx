@@ -128,14 +128,10 @@ const Icon = styled.i`
 const Menu = () => {
     const [open, setOpen] = useState(window.innerWidth > 991),
         login = (notify) => {
-            Api.login().then(u => {
-                notify("Welcome " + u.displayName + "! ♥")
-            }).catch(console.error)
+            Api.login().then(u => notify(`Welcome ${u.displayName}! 😄`)).catch(err => notify(err.message, true))
         },
         logout = (notify, user) => {
-            Api.logout().then(u => {
-                notify("Bay " + user.displayName + "! 😞")
-            }).catch(console.error)
+            Api.logout().then(() => notify(`Bay ${user.displayName}! We will miss you 😞`)).catch(err => notify(err.message, true))
         }
 
     useEffect(() => {
@@ -152,12 +148,12 @@ const Menu = () => {
                         <i className={`fas fa-${open ? 'times' : 'bars'}`}></i>
                     </StyledMenuButton>
                     <StyledMenu open={open}>
-                        <Link replace onClick={() => window.innerWidth < 991 && setOpen(false)} to="/" style={{color: 'black', textDecoration: 'none'}}>
-                            <h1 style={{padding:"10px", marginBottom: '5px', display: 'flex'}}>
-                                M
-                                <div style={{display: 'flex', transition: 'all 0.2s ease', maxWidth: open ? '100vh' : '0', overflow: "hidden"}}>ovies</div>
+                        <StyledNavLink as={Link} replace onClick={() => window.innerWidth < 991 && setOpen(false)} to="/" style={{color: 'black', textDecoration: 'none'}}>
+                            <h1 style={{padding:"10px", display: 'flex', fontSize: '25px', justifyContent:'center'}}>
+                                <img src={process.env.PUBLIC_URL + "/logo.jpg"} height='40' alt="Screenpedia logo" style={{borderRadius: '50%'}}/>
+                                <div style={{display: 'flex', transition: 'all 0.2s ease', maxWidth: open ? '100vh' : '0', overflow: "hidden", margin:'auto', filter: 'drop-shadow(0px 2px 2px rgba(0,0,0,0.1))'}}>Screenpedia</div>
                             </h1>
-                        </Link>
+                        </StyledNavLink>
                         
                         <div>
                             <StyledNavLink replace onClick={() => window.innerWidth < 991 && setOpen(false)} open={open} exact to="/">

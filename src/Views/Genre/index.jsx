@@ -36,9 +36,18 @@ const TypeGenre = () => {
         Api.typeGenre(type).then(res => setData(res.genres)).catch(({message}) => setError(message))
     },[type])
 
+    useEffect(() => {
+        if(type){
+            document.title = `Screenpedia | ${type === 'tv' ? 'Serie' : type.charAt(0).toUpperCase() + type.slice(1)}s genres`
+            return () => {
+                document.title = "Screenpedia"
+            }
+        }
+    })
+
     return(
         <Section>
-            <SectionTitle>{type.charAt(0).toUpperCase() + type.slice(1)} genres</SectionTitle>
+            <SectionTitle>{type === 'tv' ? 'Serie' : type.charAt(0).toUpperCase() + type.slice(1)}s genres</SectionTitle>
             {!data && !error ?
                 <Loading /> : 
                 error ?

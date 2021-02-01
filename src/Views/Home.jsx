@@ -15,6 +15,13 @@ const Home = () => {
         api.trending().then(res => res.results).then(setTrending)
     }, [])
 
+
+    useEffect(() => {
+        document.title = "Screenpedia | Home"
+        return () => {
+            document.title = "Screenpedia"
+        }
+    })
     return (
         <div>
             <Section>

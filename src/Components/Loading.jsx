@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import styled, { keyframes } from 'styled-components'
 
 const LoaderWrapper = styled.div`
@@ -41,19 +42,28 @@ const LoaderWrapper = styled.div`
         }
     `
 
-const Loading = () => (
-    <LoaderWrapper>
-        <Loader>
-            <div className="container">
-                <div className="film">
-                    <img alt="Film ilustration as loading spinner" className="film-img" src={process.env.PUBLIC_URL  + "/media/film.png"} />
-                    <img alt="Film ilustration as loading spinner" className="film-img" src={process.env.PUBLIC_URL  + "/media/film.png"} />
+const Loading = () => {
+    useEffect(() => {
+        document.title = "Screenpedia | Loading"
+        return () => {
+            document.title = "Screenpedia"
+        }
+    })
+
+    return (
+        <LoaderWrapper>
+            <Loader>
+                <div className="container">
+                    <div className="film">
+                        <img alt="Film ilustration as loading spinner" className="film-img" src={process.env.PUBLIC_URL  + "/media/film.png"} />
+                        <img alt="Film ilustration as loading spinner" className="film-img" src={process.env.PUBLIC_URL  + "/media/film.png"} />
+                    </div>
+                    <img alt="Camera loading ilustration" className="camera" src={process.env.PUBLIC_URL  + "/media/camera.png"} />
+                    <b style={{marginTop: '10px'}}>Loading, please wait</b>
                 </div>
-                <img alt="Camera loading ilustration" className="camera" src={process.env.PUBLIC_URL  + "/media/camera.png"} />
-                <b style={{marginTop: '10px'}}>Loading, please wait</b>
-            </div>
-        </Loader>
-    </LoaderWrapper>
-)
+            </Loader>
+        </LoaderWrapper>
+    )
+}
 
 export default Loading;

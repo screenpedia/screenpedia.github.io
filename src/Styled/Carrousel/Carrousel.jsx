@@ -13,6 +13,9 @@ const Carrousel = styled.div`
         border-color: rgba(0, 0, 0, 0.1);
         transition: border-color 0.125s linear;
     }
+    @media(max-width: 991px){
+        border-color: rgba(0, 0, 0, 0.1);
+    }
 
     &::-webkit-scrollbar,
     &::-webkit-scrollbar-thumb,

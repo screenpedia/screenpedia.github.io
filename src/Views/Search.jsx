@@ -57,6 +57,13 @@ const Search = () => {
         setTotalPages(0)
     }, [history.location.search])
 
+    useEffect(() => {
+        document.title = "Screenpedia | " + (name ? name : 'Search')
+        return () => {
+            document.title = "Screenpedia"
+        }
+    })
+
     return (
         <div>
             <SearchBar />

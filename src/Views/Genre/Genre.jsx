@@ -55,13 +55,22 @@ const Genre = () => {
         return
     }, [id, type, history, page])
 
+    useEffect(() => {
+        if(type && name){
+            document.title = `Screenpedia | ${name} ${type === 'tv' ? 'serie' : type}s`
+            return () => {
+                document.title = "Screenpedia"
+            }
+        }
+    })
+
     return (
         <Section>
             {!search && !error && <Loading /> }
             {error && <ErrorComponent error={error} />}
             {!error && search &&
                     <>
-                        <SectionTitle>{type.charAt(0).toUpperCase() + type.slice(1)}'s {name} genre</SectionTitle>
+                        <SectionTitle>{name} {type === 'tv' ? 'serie' : type}s</SectionTitle>
                         <Carrousel style={{flexWrap: 'wrap', alignContent:"center", justifyContent:"center"}}>
                             {search.map((data, index) => <CarrouselItem key={index} data={data}/>)}
                         </Carrousel>

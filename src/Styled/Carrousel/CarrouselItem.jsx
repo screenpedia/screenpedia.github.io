@@ -106,6 +106,9 @@ const CarrouselItemWrapper = styled.div`
         &:hover{
             cursor: pointer;
         }
+        @media(max-width: 991px){
+            opacity: 0.5;
+        }
     `;
 
 const CarrouselItem = ({data, lastChild, firstChild, rotate}) => {

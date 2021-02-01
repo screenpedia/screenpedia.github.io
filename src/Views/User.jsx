@@ -146,7 +146,8 @@ List = ({unique, data, userId, notify}) => {
                     })
             }
         },
-        confirmNameEdit = () => {
+        confirmNameEdit = (e) => {
+            e.preventDefault()
             if(newName !== data.name &&window.confirm(`Do you want to save changes?`)){
                 api.updateName(data.author, data.id, newName)
                     .then(notify("Successfully edited"))
@@ -163,11 +164,13 @@ List = ({unique, data, userId, notify}) => {
             <StyledListHeader open={open}>
                 <div style={{display: 'flex', justifyContent: 'center', flexDirection:'column'}}>
                     {edit ? 
-                        <StyledInput placeholder="List name" value={newName} onInput={(e) => setNewName(e.currentTarget.value)} />
+                        <form onSubmit={confirmNameEdit}>
+                            <StyledInput placeholder="List name" value={newName} onInput={(e) => setNewName(e.currentTarget.value)} />
+                        </form>
                         :
                         <>
                             <b>{data.name}</b>
-                            <p>To Watch: {data.list.length}</p>
+                            <p>Items: {data.list.length}</p>
                         </>
                     }
                 </div>
