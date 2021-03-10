@@ -1,6 +1,6 @@
 {
-  "homepage": "http://screenpedia.github.io/screenpedia.github.io",
-  "name": "screenpedia.github.io",
+  "homepage": "http://screenpedia.github.io",
+  "name": "screenpedia",
   "version": "0.1.0",
   "private": false,
   "dependencies": {
