@@ -3,17 +3,17 @@
   "short_name": "Screenpedia",
   "icons": [
       {
-        "src": "/logo.jpg",
+        "src": "./logo.jpg",
         "type": "image/jpg",
         "sizes": "92x92"
       },
       {
-        "src": "/logo.jpg",
+        "src": "./logo.jpg",
         "type": "image/jpg",
         "sizes": "144x144"
       },
       {
-        "src": "/logo.jpg",
+        "src": "./logo.jpg",
         "type": "image/jpg",
         "sizes": "152x152"
       }        
@@ -22,7 +22,6 @@
   "orientation": "portrait",
   "scope": ".",
   "start_url": ".",
-  "splash_pages":null,
   "theme_color": "#96f2d7",
   "background_color": "#fff"
 }
